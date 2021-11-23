@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:fragment="com.radiojhero.app.ui.webpage.WebPageFragment"
+        app:icon="@drawable/ic_baseline_help_24"
+        app:title="@string/setting_about" />
+
+    <ListPreference
+        app:defaultValue="system"
+        app:entries="@array/appearance_entries"
+        app:entryValues="@array/appearance_values"
+        app:icon="@drawable/ic_baseline_brightness_4_24"
+        app:key="appearance"
+        app:title="@string/setting_appearance"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:defaultValue="none"
+        app:entries="@array/notifications_entries"
+        app:entryValues="@array/notifications_values"
+        app:icon="@drawable/ic_baseline_notifications_24"
+        app:key="notification"
+        app:title="@string/setting_notifications"
+        app:useSimpleSummaryProvider="true" />
+
+    <Preference app:layout="@layout/made_by" />
+
+</PreferenceScreen>

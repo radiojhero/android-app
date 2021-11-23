@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="search_stats">
+        <item quantity="one">%1$d resultado, %2$d ms</item>
+        <item quantity="other">%1$d resultados, %2$d ms</item>
+    </plurals>
+</resources>

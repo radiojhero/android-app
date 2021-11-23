@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_now">
+
+    <fragment
+        android:id="@+id/navigation_now"
+        android:name="com.radiojhero.app.ui.now.NowFragment"
+        android:label="@string/title_now"
+        tools:layout="@layout/fragment_now">
+        <action
+            android:id="@+id/action_navigation_now_to_navigation_webpage"
+            app:destination="@id/navigation_webpage"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_interact"
+        android:name="com.radiojhero.app.ui.interact.InteractFragment"
+        android:label="@string/title_interact"
+        tools:layout="@layout/fragment_interact" />
+
+    <fragment
+        android:id="@+id/navigation_articles"
+        android:name="com.radiojhero.app.ui.posts.PostsFragment"
+        android:label="@string/title_articles"
+        tools:layout="@layout/fragment_posts">
+        <action
+            android:id="@+id/action_navigation_articles_to_navigation_webpage"
+            app:destination="@id/navigation_webpage"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.radiojhero.app.ui.settings.SettingsFragment"
+        android:label="@string/title_settings">
+        <action
+            android:id="@+id/action_navigation_settings_to_navigation_webpage"
+            app:destination="@id/navigation_webpage"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_webpage"
+        android:name="com.radiojhero.app.ui.webpage.WebPageFragment"
+        android:label="@string/title_webpage"
+        tools:layout="@layout/fragment_webpage">
+        <argument
+            android:name="url"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_navigation_webpage_self"
+            app:destination="@id/navigation_webpage"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+</navigation>

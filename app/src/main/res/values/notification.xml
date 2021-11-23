@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt-rBR">
+    <string-array name="notifications_entries">
+        <item>@string/notifications_none</item>
+        <item>@string/notifications_shows</item>
+        <item>@string/notifications_shows_articles</item>
+    </string-array>
+    <string-array name="notifications_values">
+        <item>none</item>
+        <item>shows</item>
+        <item>shows_articles</item>
+    </string-array>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_now"
+        android:icon="@drawable/ic_baseline_music_note_24"
+        android:title="@string/title_now"/>
+
+    <item
+        android:id="@+id/navigation_interact"
+        android:icon="@drawable/ic_outline_mode_comment_24"
+        android:title="@string/title_interact"/>
+
+    <item
+        android:id="@+id/placeholder"
+        android:title=""/>
+
+    <item
+        android:id="@+id/navigation_articles"
+        android:icon="@drawable/ic_outline_article_24"
+        android:title="@string/title_articles"/>
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/title_settings"/>
+
+</menu>

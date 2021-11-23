@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/ic_baseline_brightness_4_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_calendar_today_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_help_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_music_note_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_notifications_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_pause_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_outline_article_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_outline_mode_comment_24.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/drawable/ic_search_black_24dp.xml" value="0.4502564102564103" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.40443840579710144" />
+        <entry key="app/src/main/res/layout/activity_search.xml" value="0.25226449275362317" />
+        <entry key="app/src/main/res/layout/content_scrolling.xml" value="0.25226449275362317" />
+        <entry key="app/src/main/res/layout/fragment_articles.xml" value="0.40443840579710144" />
+        <entry key="app/src/main/res/layout/fragment_interact.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_now.xml" value="0.12411347517730496" />
+        <entry key="app/src/main/res/layout/fragment_posts.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_webpage.xml" value="0.21453900709219859" />
+        <entry key="app/src/main/res/layout/made_by.xml" value="0.44114583333333335" />
+        <entry key="app/src/main/res/layout/main_line_view.xml" value="0.3908514492753623" />
+        <entry key="app/src/main/res/layout/post_item.xml" value="0.2128623188405797" />
+        <entry key="app/src/main/res/layout/search_header.xml" value="0.2595108695652174" />
+        <entry key="app/src/main/res/layout/search_hit.xml" value="0.5" />
+        <entry key="app/src/main/res/menu/articles_menu.xml" value="0.44114583333333335" />
+        <entry key="app/src/main/res/menu/now_menu.xml" value="0.43435897435897436" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.45729166666666665" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.45729166666666665" />
+        <entry key="app/src/main/res/xml/root_preferences.xml" value="0.2708333333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

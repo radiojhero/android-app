@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt-rBR">
+    <string-array name="appearance_entries" tools:ignore="InconsistentArrays">
+        <item>@string/appearance_system</item>
+        <item>@string/appearance_light</item>
+        <item>@string/appearance_dark</item>
+    </string-array>
+    <string-array name="appearance_values" tools:ignore="InconsistentArrays">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>
