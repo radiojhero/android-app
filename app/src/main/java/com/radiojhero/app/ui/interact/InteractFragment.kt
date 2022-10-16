@@ -83,8 +83,7 @@ class InteractFragment : Fragment() {
             }
         }
 
-        availability = MetadataFetcher.currentData?.getBoolean("is_live")
-        maybeShowUnavailabilityAlert(true)
+        maybeToggleForm(MetadataFetcher.currentData?.getBoolean("is_live"))
         return binding.root
     }
 
@@ -105,9 +104,7 @@ class InteractFragment : Fragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMetadata(event: MetadataFetcher.MetadataEvent) {
-        val wasAvailable = availability
-        availability = event.data.getBoolean("is_live")
-        maybeShowUnavailabilityAlert(wasAvailable)
+        maybeToggleForm(event.data.getBoolean("is_live"))
     }
 
     @Synchronized
@@ -221,19 +218,18 @@ class InteractFragment : Fragment() {
         }
     }
 
-    private fun maybeShowUnavailabilityAlert(wasAvailable: Boolean?) {
-        binding.apply {
-            editName.isEnabled = availability == true
-            editSong.isEnabled = availability == true
-            editMessage.isEnabled = availability == true
-            sendButton.isEnabled = availability == true
-        }
-
-        if (availability == true || wasAvailable != true || _binding == null) {
+    private fun maybeToggleForm(toggle: Boolean?) {
+        if (_binding == null) {
             return
         }
 
-        alert(R.string.interact_unavailable, R.string.interact_dj)
+        if (availability == true) {
+            return
+        }
+
+        binding.unavailable.visibility = if (toggle == true) View.GONE else View.VISIBLE
+        binding.requestsForm.visibility = if (toggle == true) View.VISIBLE else View.GONE
+        availability = toggle
     }
 
     private fun alert(@StringRes titleId: Int, @StringRes messageId: Int) {
