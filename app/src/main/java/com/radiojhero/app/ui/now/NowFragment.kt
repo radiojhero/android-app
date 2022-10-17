@@ -101,11 +101,11 @@ class NowFragment : Fragment() {
     }
 
     private lateinit var mediaController: MediaControllerCompat
-    private var metadata: Bundle? = null
+    private var metadata: Bundle = Bundle()
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onExtrasChanged(extras: Bundle?) {
-            metadata = extras
+            metadata = extras!!
             updateMetadata()
         }
     }
@@ -185,16 +185,19 @@ class NowFragment : Fragment() {
         }
     }
 
+    private fun isMetadataEmpty() =
+        metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME, -1.0) == -1.0
+
     private fun updateMetadata() {
-        if (_binding == null || metadata == null) {
+        if (_binding == null || isMetadataEmpty()) {
             return
         }
 
-        Glide.with(this).load(metadata!!.getString(MediaPlaybackService.PROGRAM_IMAGE))
+        Glide.with(this).load(metadata.getString(MediaPlaybackService.PROGRAM_IMAGE))
             .addListener(programImageListener)
             .into(binding.programImage)
 
-        val djImageSrc = metadata!!.getString(MediaPlaybackService.DJ_IMAGE)
+        val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
         if (djImageSrc == null) {
             binding.djImage.visibility = View.GONE
             djImageLoaded = true
@@ -204,31 +207,31 @@ class NowFragment : Fragment() {
                 .into(binding.djImage)
         }
 
-        lastUpdatedAt = metadata!!.getDouble(MediaPlaybackService.LAST_UPDATED_TIME)
+        lastUpdatedAt = metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME)
         maybeFinishUpdatingMetadata()
     }
 
     private fun maybeFinishUpdatingMetadata() {
-        if (!programImageLoaded || !djImageLoaded || _binding == null || metadata == null) {
+        if (!programImageLoaded || !djImageLoaded || _binding == null || isMetadataEmpty()) {
             return
         }
 
-        binding.programLabel.text = metadata!!.getString(MediaPlaybackService.PROGRAM_NAME)
+        binding.programLabel.text = metadata.getString(MediaPlaybackService.PROGRAM_NAME)
         binding.descriptionLabel.text =
-            metadata!!.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
+            metadata.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
 
         binding.djLabel.text = getString(
             R.string.dj_and_genre,
-            metadata!!.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
-            metadata!!.getString(MediaPlaybackService.PROGRAM_GENRE)
+            metadata.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
+            metadata.getString(MediaPlaybackService.PROGRAM_GENRE)
         )
 
-        binding.songLabel.text = metadata!!.getString(MediaPlaybackService.SONG_TITLE)
-        binding.artistLabel.text = metadata!!.getString(MediaPlaybackService.SONG_ARTIST)
+        binding.songLabel.text = metadata.getString(MediaPlaybackService.SONG_TITLE)
+        binding.artistLabel.text = metadata.getString(MediaPlaybackService.SONG_ARTIST)
 
-        songDuration = metadata!!.getDouble(MediaPlaybackService.SONG_DURATION)
+        songDuration = metadata.getDouble(MediaPlaybackService.SONG_DURATION)
         songProgress =
-            metadata!!.getDouble(MediaPlaybackService.CURRENT_TIME) - metadata!!.getDouble(
+            metadata.getDouble(MediaPlaybackService.CURRENT_TIME) - metadata.getDouble(
                 MediaPlaybackService.SONG_START_TIME
             )
 
