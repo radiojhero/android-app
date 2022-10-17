@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import com.onesignal.OneSignal
+import com.radiojhero.app.BuildConfig
 import com.radiojhero.app.R
 import com.radiojhero.app.switchTheme
 
@@ -47,5 +48,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         OneSignal.sendTag("notification_mode", "$newValue")
+        OneSignal.sendTag("debug_mode", if (BuildConfig.DEBUG) "1" else "0")
     }
 }

@@ -1,6 +1,9 @@
 package com.radiojhero.app
 
 import android.app.Application
+import android.net.Uri
+import android.os.Bundle
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.onesignal.OneSignal
 import com.radiojhero.app.fetchers.ConfigFetcher
@@ -32,7 +35,21 @@ class RadioJHeroApplication : Application() {
         OneSignal.initWithContext(this)
         OneSignal.setNotificationOpenedHandler {
             val url = it.notification.additionalData?.getString("myurl")
-            println(url)
+                ?: return@setNotificationOpenedHandler
+
+            if (Uri.parse(url).host != ConfigFetcher.getConfig("host")) {
+                return@setNotificationOpenedHandler
+            }
+
+            val args = Bundle()
+            args.putString("url", url)
+
+            NavDeepLinkBuilder(this)
+                .setGraph(R.navigation.mobile_navigation)
+                .setDestination(R.id.navigation_webpage)
+                .setArguments(args)
+                .createTaskStackBuilder()
+                .startActivities()
         }
     }
 
