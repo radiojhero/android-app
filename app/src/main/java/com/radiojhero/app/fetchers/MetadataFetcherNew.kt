@@ -12,6 +12,7 @@ import kotlin.math.min
 
 class MetadataFetcherNew {
 
+    private val interval = 15.0
     val currentData get() = mData
     val lastUpdatedAt get() = mLastUpdatedAt
     val isRunning get() = mIsRunning
@@ -66,7 +67,7 @@ class MetadataFetcherNew {
                 println("Metadata fetched and parsed.")
                 mCallback()
 
-                var delay = 15.0
+                var delay = interval
                 try {
                     val song = data.getJSONArray("song_history").getJSONObject(0)
                     val songDuration = song.getDouble("duration")
@@ -87,7 +88,7 @@ class MetadataFetcherNew {
             },
             { error ->
                 println("Error while fetching metadata: $error")
-                setTimeout(15.0)
+                setTimeout(interval)
             }
         )
 
