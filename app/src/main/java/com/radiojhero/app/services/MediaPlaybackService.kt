@@ -39,6 +39,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private var playbackState = PlaybackStateCompat.STATE_NONE
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
+    private var programImageSrc = ""
+
     private val player = MediaPlayer().apply {
         setAudioAttributes(
             AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
@@ -148,18 +150,18 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 (song.getDouble("duration") * 1000).roundToLong()
             )
 
+        if (this.programImageSrc != programImageSrc) {
+            Glide.with(this).asBitmap().load(programImageSrc).into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    this@MediaPlaybackService.programImageSrc = programImageSrc
+                    println("image loaded: $programImageSrc")
+                    metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource)
+                }
 
-        Glide.with(this).asBitmap().load(programImageSrc).into(object : CustomTarget<Bitmap>() {
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                metadataBuilder.putBitmap(
-                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                    resource
-                )
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-            }
-        })
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+            })
+        }
 
         mediaSession.setMetadata(metadataBuilder.build())
 
