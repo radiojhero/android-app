@@ -12,12 +12,16 @@ class RadioJHeroApplication : Application() {
         detectNightModeFromSettings()
         ensureRemoteSettings()
 
-        SentryAndroid.init(this) {
-            it.apply {
-                dsn = ConfigFetcher.getConfig("sentryUrl")
-                isDebug = true
-                isEnableAutoSessionTracking = true
-                sampleRate = 1.0
+        println("debug = ${BuildConfig.DEBUG}")
+
+        if (!BuildConfig.DEBUG) {
+            SentryAndroid.init(this) {
+                it.apply {
+                    dsn = ConfigFetcher.getConfig("sentryUrl")
+                    isDebug = true
+                    isEnableAutoSessionTracking = true
+                    sampleRate = 1.0
+                }
             }
         }
 
