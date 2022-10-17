@@ -8,6 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="v3.0.0-alpha.3 — Made with love by Armando Meziat" />
+        android:gravity="center"
+        android:text="@string/version_name_and_text" />
 
 </LinearLayout>
