@@ -2,6 +2,7 @@ package com.radiojhero.app.ui.now
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v4.media.session.MediaControllerCompat
 import android.text.format.DateUtils
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -15,14 +16,12 @@ import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.databinding.FragmentNowBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
-import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.getNow
+import com.radiojhero.app.services.MediaPlaybackService
 import koleton.api.hideSkeleton
 import koleton.api.loadSkeleton
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -101,6 +100,16 @@ class NowFragment : Fragment() {
         }
     }
 
+    private lateinit var mediaController: MediaControllerCompat
+    private var metadata: Bundle? = null
+
+    private var controllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onExtrasChanged(extras: Bundle?) {
+            metadata = extras
+            updateMetadata()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -121,11 +130,14 @@ class NowFragment : Fragment() {
                 outlineProvider = RoundedOutlineProvider(25f)
             }
         }
+
+        setupMediaController()
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mediaController.unregisterCallback(controllerCallback)
         _binding = null
     }
 
@@ -148,73 +160,77 @@ class NowFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)
         updateMetadata()
     }
 
     override fun onStop() {
         super.onStop()
-        EventBus.getDefault().unregister(this)
         stopUpdatingProgress()
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMetadata(event: MetadataFetcher.MetadataEvent) {
-        updateMetadata()
+    private fun setupMediaController() {
+        try {
+            mediaController = MediaControllerCompat.getMediaController(requireActivity()).apply {
+                this@NowFragment.metadata = extras
+                registerCallback(controllerCallback)
+                updateMetadata()
+            }
+        } catch (_: NullPointerException) {
+            Timer().schedule(50) {
+                println("Failed to set up mediaController; retrying...")
+                requireActivity().runOnUiThread {
+                    setupMediaController()
+                }
+            }
+        }
     }
 
     private fun updateMetadata() {
-        if (_binding == null) {
+        if (_binding == null || metadata == null) {
             return
         }
 
-        val metadata = MetadataFetcher.currentData ?: return
-        val program = metadata.getJSONObject("program")
-        val programCovers = program.getJSONArray("cover")
-        val programImageSrc =
-            programCovers.getJSONObject(programCovers.length() - 1).getString("src")
-        Glide.with(this).load(programImageSrc).addListener(programImageListener)
+        Glide.with(this).load(metadata!!.getString(MediaPlaybackService.PROGRAM_IMAGE))
+            .addListener(programImageListener)
             .into(binding.programImage)
 
-        val programDjs = program.getJSONArray("djs")
-        if (programDjs.length() > 0) {
-            binding.djImage.visibility = View.VISIBLE
-            val djImageSrc = programDjs.getJSONObject(0).getString("avatar")
-            Glide.with(this).load(djImageSrc).addListener(djImageListener)
-                .into(binding.djImage)
-        } else {
+        val djImageSrc = metadata!!.getString(MediaPlaybackService.DJ_IMAGE)
+        if (djImageSrc == null) {
             binding.djImage.visibility = View.GONE
             djImageLoaded = true
+        } else {
+            binding.djImage.visibility = View.VISIBLE
+            Glide.with(this).load(djImageSrc).addListener(djImageListener)
+                .into(binding.djImage)
         }
 
-        lastUpdatedAt = MetadataFetcher.lastUpdatedAt
+        lastUpdatedAt = metadata!!.getDouble(MediaPlaybackService.LAST_UPDATED_TIME)
         maybeFinishUpdatingMetadata()
     }
 
     private fun maybeFinishUpdatingMetadata() {
-        if (!programImageLoaded || !djImageLoaded || _binding == null) {
+        if (!programImageLoaded || !djImageLoaded || _binding == null || metadata == null) {
             return
         }
 
-        val metadata = MetadataFetcher.currentData ?: return
-        val program = metadata.getJSONObject("program")
-        val programDjs = program.getJSONArray("djs")
+        binding.programLabel.text = metadata!!.getString(MediaPlaybackService.PROGRAM_NAME)
+        binding.descriptionLabel.text =
+            metadata!!.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
 
-        binding.programLabel.text = program.getString("name")
-        binding.descriptionLabel.text = program.getString("description")
+        binding.djLabel.text = getString(
+            R.string.dj_and_genre,
+            metadata!!.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
+            metadata!!.getString(MediaPlaybackService.PROGRAM_GENRE)
+        )
 
-        var djText = getString(R.string.playlist)
-        if (programDjs.length() > 0) {
-            djText = getString(R.string.dj_string, programDjs.getJSONObject(0).getString("name"))
-        }
-        binding.djLabel.text = getString(R.string.dj_and_genre, djText, program.getString("genre"))
+        binding.songLabel.text = metadata!!.getString(MediaPlaybackService.SONG_TITLE)
+        binding.artistLabel.text = metadata!!.getString(MediaPlaybackService.SONG_ARTIST)
 
-        val song = metadata.getJSONArray("song_history").getJSONObject(0)
-        binding.songLabel.text = song.getString("title")
-        binding.artistLabel.text = song.getString("artist")
-
-        songDuration = song.getDouble("duration")
-        songProgress = metadata.getDouble("current_time") - song.getDouble("start_time")
+        songDuration = metadata!!.getDouble(MediaPlaybackService.SONG_DURATION)
+        songProgress =
+            metadata!!.getDouble(MediaPlaybackService.CURRENT_TIME) - metadata!!.getDouble(
+                MediaPlaybackService.SONG_START_TIME
+            )
 
         binding.constraintLayout.hideSkeleton()
         startUpdatingProgress()

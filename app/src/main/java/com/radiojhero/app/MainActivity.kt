@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.media.AudioManager
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
@@ -17,7 +16,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.radiojhero.app.databinding.ActivityMainBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
-import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import com.radiojhero.app.ui.settings.SettingsFragmentDirections
 
@@ -30,28 +28,15 @@ class MainActivity : AppCompatActivity(),
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             mediaBrowser.sessionToken.also { token ->
-                val mediaController = MediaControllerCompat(
-                    this@MainActivity, // Context
-                    token
-                )
-
+                val mediaController = MediaControllerCompat(this@MainActivity, token)
                 MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
             }
 
             buildTransportControls()
         }
-
-        override fun onConnectionSuspended() {
-        }
-
-        override fun onConnectionFailed() {
-        }
     }
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-        }
-
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             switchFabIcon(state?.state == PlaybackStateCompat.STATE_PLAYING)
         }
@@ -141,7 +126,6 @@ class MainActivity : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
         ConfigFetcher.start(applicationContext)
-        MetadataFetcher.start(applicationContext)
     }
 
     override fun onResume() {
@@ -152,7 +136,6 @@ class MainActivity : AppCompatActivity(),
     override fun onStop() {
         super.onStop()
         ConfigFetcher.stop()
-        MetadataFetcher.stop()
     }
 
     override fun onDestroy() {

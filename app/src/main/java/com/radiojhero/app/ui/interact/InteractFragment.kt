@@ -1,6 +1,7 @@
 package com.radiojhero.app.ui.interact
 
 import android.os.Bundle
+import android.support.v4.media.session.MediaControllerCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +15,8 @@ import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentInteractBinding
 import com.radiojhero.app.endEditing
 import com.radiojhero.app.fetchers.ConfigFetcher
-import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.fetchers.NetworkSingleton
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import com.radiojhero.app.services.MediaPlaybackService
 
 
 class InteractFragment : Fragment() {
@@ -26,8 +24,16 @@ class InteractFragment : Fragment() {
     private var _binding: FragmentInteractBinding? = null
     private val binding get() = _binding!!
 
-    private var availability: Boolean? = false
+    private var availability = false
     private lateinit var network: NetworkSingleton
+
+    private lateinit var mediaController: MediaControllerCompat
+
+    private var controllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onExtrasChanged(extras: Bundle?) {
+            maybeToggleForm(extras!!.getBoolean(MediaPlaybackService.IS_LIVE))
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,28 +89,17 @@ class InteractFragment : Fragment() {
             }
         }
 
-        maybeToggleForm(MetadataFetcher.currentData?.getBoolean("is_live"))
+        mediaController = MediaControllerCompat.getMediaController(requireActivity()).apply {
+            registerCallback(controllerCallback)
+            maybeToggleForm(extras.getBoolean(MediaPlaybackService.IS_LIVE))
+        }
+
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMetadata(event: MetadataFetcher.MetadataEvent) {
-        maybeToggleForm(event.data.getBoolean("is_live"))
     }
 
     @Synchronized
@@ -218,17 +213,17 @@ class InteractFragment : Fragment() {
         }
     }
 
-    private fun maybeToggleForm(toggle: Boolean?) {
+    private fun maybeToggleForm(toggle: Boolean) {
         if (_binding == null) {
             return
         }
 
-        if (availability == true) {
+        if (availability) {
             return
         }
 
-        binding.unavailable.visibility = if (toggle == true) View.GONE else View.VISIBLE
-        binding.requestsForm.visibility = if (toggle == true) View.VISIBLE else View.GONE
+        binding.unavailable.visibility = if (toggle) View.GONE else View.VISIBLE
+        binding.requestsForm.visibility = if (toggle) View.VISIBLE else View.GONE
         availability = toggle
     }
 

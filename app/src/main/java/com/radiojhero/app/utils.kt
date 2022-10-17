@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import java.util.*
 
+
 fun getNow(): Double {
     return Calendar.getInstance().timeInMillis / 1000.0
 }

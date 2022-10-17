@@ -2,12 +2,14 @@ package com.radiojhero.app.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -22,15 +24,29 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.radiojhero.app.R
 import com.radiojhero.app.fetchers.ConfigFetcher
-import com.radiojhero.app.fetchers.MetadataFetcherNew
+import com.radiojhero.app.fetchers.MetadataFetcher
 import kotlin.math.roundToLong
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 
-    private val fetcher = MetadataFetcherNew().apply {
-        start(this@MediaPlaybackService) {
-            updateMetadata()
-        }
+    companion object {
+        const val PROGRAM_IMAGE = "com.radiojhero.app.PROGRAM_IMAGE"
+        const val DJ_IMAGE = "com.radiojhero.app.DJ_IMAGE"
+        const val PROGRAM_NAME = "com.radiojhero.app.PROGRAM_NAME"
+        const val DJ_NAME = "com.radiojhero.app.DJ_NAME"
+        const val PROGRAM_GENRE = "com.radiojhero.app.PROGRAM_GENRE"
+        const val CURRENT_TIME = "com.radiojhero.app.CURRENT_TIME"
+        const val SONG_START_TIME = "com.radiojhero.app.SONG_START_TIME"
+        const val SONG_DURATION = "com.radiojhero.app.SONG_DURATION"
+        const val SONG_TITLE = "com.radiojhero.app.SONG_TITLE"
+        const val SONG_ARTIST = "com.radiojhero.app.SONG_ARTIST"
+        const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
+        const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
+        const val IS_LIVE = "com.radiojhero.app.IS_LIVE"
+    }
+
+    private val fetcher = MetadataFetcher().apply {
+        prepare(this@MediaPlaybackService)
     }
 
     private lateinit var mediaSession: MediaSessionCompat
@@ -38,30 +54,31 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private var playbackState = PlaybackStateCompat.STATE_NONE
     private val metadataBuilder = MediaMetadataCompat.Builder()
+    private var bundle = Bundle()
 
     private var programImageSrc = ""
 
     private val player = MediaPlayer().apply {
         setAudioAttributes(
-            AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build()
         )
     }
 
     private val callback = object : MediaSessionCompat.Callback() {
-        override fun onCustomAction(action: String?, extras: Bundle?) {
-            super.onCustomAction(action, extras)
-        }
-
         override fun onPlay() {
             if (player.isPlaying) {
                 return
             }
 
             player.apply {
-                setDataSource(ConfigFetcher.getConfig("streamingUrl"))
+                val source = ConfigFetcher.getConfig("streamingUrl")
+                setDataSource(source)
                 prepareAsync()
                 setOnPreparedListener {
+                    println("Playing at $source")
                     it.start()
                 }
             }
@@ -91,6 +108,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         private fun clear() {
             player.reset()
+            println("Player stopped.")
             playbackState = PlaybackStateCompat.STATE_NONE
             updateMetadata()
         }
@@ -98,6 +116,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+
+        fetcher.start {
+            updateMetadata()
+        }
+
         stateBuilder =
             PlaybackStateCompat.Builder().setActions(
                 PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_PLAY_PAUSE
@@ -108,10 +131,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
             )
 
-            setPlaybackState(stateBuilder.build())
             setCallback(callback)
             setSessionToken(sessionToken)
+            setExtras(Bundle(bundle))
             setMetadata(metadataBuilder.build())
+            setPlaybackState(stateBuilder.build())
             isActive = true
         }
     }
@@ -120,6 +144,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onDestroy()
         player.reset()
         fetcher.stop()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return super.onBind(intent)
     }
 
     override fun onGetRoot(
@@ -135,12 +163,31 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private fun updateMetadata() {
-        val metadata = fetcher.currentData!!
+        val metadata = fetcher.currentData
         val song = metadata.getJSONArray("song_history").getJSONObject(0)
-        val programCovers = metadata.getJSONObject("program").getJSONArray("cover")
+        val program = metadata.getJSONObject("program")
+        val programCovers = program.getJSONArray("cover")
         val programImageSrc =
             programCovers.getJSONObject(programCovers.length() - 1).getString("src")
         val songProgress = metadata.getDouble("current_time") - song.getDouble("start_time")
+        val djs = program.getJSONArray("djs")
+        val dj = if (djs.length() > 0) djs.getJSONObject(0) else null
+
+        bundle.apply {
+            putString(PROGRAM_IMAGE, programImageSrc)
+            putString(DJ_IMAGE, dj?.getString("avatar"))
+            putString(PROGRAM_NAME, program.getString("name"))
+            putString(DJ_NAME, dj?.getString("name"))
+            putString(PROGRAM_GENRE, program.getString("genre"))
+            putString(SONG_TITLE, song.getString("title"))
+            putString(SONG_ARTIST, song.getString("artist"))
+            putDouble(CURRENT_TIME, metadata.getDouble("current_time"))
+            putDouble(SONG_START_TIME, song.getDouble("start_time"))
+            putDouble(SONG_DURATION, song.getDouble("duration"))
+            putString(PROGRAM_DESCRIPTION, program.getString("description"))
+            putDouble(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
+            putBoolean(IS_LIVE, metadata.getBoolean("is_live"))
+        }
 
         metadataBuilder
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getString("title"))
@@ -163,16 +210,18 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             })
         }
 
-        mediaSession.setMetadata(metadataBuilder.build())
-
-        mediaSession.setPlaybackState(
-            stateBuilder.setState(
-                playbackState,
-                (songProgress * 1000).roundToLong(),
-                1f,
-                SystemClock.elapsedRealtime()
-            ).build()
-        )
+        mediaSession.apply {
+            setExtras(Bundle(bundle))
+            setMetadata(metadataBuilder.build())
+            setPlaybackState(
+                stateBuilder.setState(
+                    playbackState,
+                    (songProgress * 1000).roundToLong(),
+                    1f,
+                    SystemClock.elapsedRealtime()
+                ).build()
+            )
+        }
 
         displayNotification()
     }
