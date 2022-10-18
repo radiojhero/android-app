@@ -5,8 +5,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-def internalVersion = 4
-def externalVersion = "3.0.0-alpha.4"
+def madeBy = "Made with love by Armando Meziat"
 
 android {
     compileSdk 33
@@ -15,20 +14,21 @@ android {
         applicationId "com.radiojhero.app"
         minSdk 21
         targetSdk 33
-        versionCode internalVersion
-        versionName externalVersion
+        versionCode 4
+        versionName "3.0.0-alpha.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
-            resValue "string", "version_name", "${externalVersion}.SNAPSHOT"
-            resValue "string", "version_name_and_text", "v${externalVersion}.SNAPSHOT - Made with love by Armando Meziat"
+            versionNameSuffix defaultConfig.versionName.contains("-") ? ".SNAPSHOT" : "-SNAPSHOT"
+            resValue "string", "version_name", "${defaultConfig.versionName}${versionNameSuffix}"
+            resValue "string", "version_name_and_text", "v${defaultConfig.versionName}${versionNameSuffix} - ${madeBy}"
         }
 
         release {
-            resValue "string", "version_name", externalVersion
-            resValue "string", "version_name_and_text", "v${externalVersion} - Made with love by Armando Meziat"
+            resValue "string", "version_name", defaultConfig.versionName
+            resValue "string", "version_name_and_text", "v${defaultConfig.versionName} - ${madeBy}"
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
