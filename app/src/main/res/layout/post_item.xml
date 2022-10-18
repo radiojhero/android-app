@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/image_view"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="75sp"
+            android:layout_height="75sp"
             android:contentDescription="@string/post_cover_image"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         <TextView
             android:id="@+id/date_label"
             android:layout_width="0dp"
-            android:layout_height="20dp"
+            android:layout_height="20sp"
             android:background="@color/black_translucent"
             android:ellipsize="end"
             android:gravity="center"
@@ -74,7 +74,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="sans-serif"
             android:maxLines="2"
             android:scrollbars="none"
             android:text="Post title, which can occupy a maximum of two lines"
@@ -88,7 +87,6 @@
             android:layout_height="wrap_content"
             android:alpha="0.6"
             android:ellipsize="end"
-            android:fontFamily="sans-serif"
             android:maxLines="3"
             android:scrollbars="none"
             android:text="Post subtitle, which has more room: it can occupy a maximum of three lines before it gets truncated."
