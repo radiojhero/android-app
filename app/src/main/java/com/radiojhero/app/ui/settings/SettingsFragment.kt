@@ -48,6 +48,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         OneSignal.sendTag("notification_mode", "$newValue")
-        OneSignal.sendTag("debug_mode", if (BuildConfig.DEBUG) "1" else "0")
+
+        if (BuildConfig.DEBUG) {
+            OneSignal.sendTag("debug_mode", "1")
+        }
     }
 }

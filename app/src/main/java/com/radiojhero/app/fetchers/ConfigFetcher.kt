@@ -12,7 +12,6 @@ import kotlin.concurrent.scheduleAtFixedRate
 
 class ConfigFetcher {
     companion object {
-        val isRunning get() = mIsRunning
         val hasLoaded: Boolean get() = mSharedPreferences.getBoolean("remoteConfigLoaded", false)
         private var mIsRunning = false
         private var mConfigTimer: Timer? = null

@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.trimmedLength
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +66,6 @@ class PostsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPostsBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
         setupRecycler()
         setupSearchRecycler()
 
@@ -77,6 +78,18 @@ class PostsFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                createMenu(menu, menuInflater)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                return selectMenu(item)
+            }
+        }, viewLifecycleOwner, Lifecycle.State.STARTED)
     }
 
     override fun onDestroyView() {
@@ -94,7 +107,7 @@ class PostsFragment : Fragment() {
         PostsFetcher.cancel()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    private fun createMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.articles_menu, menu)
         val searchView =
             menu.findItem(R.id.action_search).actionView as SearchView
@@ -124,13 +137,7 @@ class PostsFragment : Fragment() {
         )
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId != R.id.action_search) {
-            return super.onOptionsItemSelected(item)
-        }
-
-        return true
-    }
+    private fun selectMenu(item: MenuItem): Boolean = item.itemId == R.id.action_search
 
     private fun setupRecycler() {
         val columns =
@@ -221,6 +228,7 @@ class PostsFragment : Fragment() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun doSearch() = GlobalScope.launch {
         if (search.trimmedLength() == 0 || searchPage > 0 && (searchRemainingHits == 0 || isSearching)) {
             return@launch

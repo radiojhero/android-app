@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.text.format.DateUtils
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -116,7 +118,6 @@ class NowFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentNowBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
         binding.apply {
             constraintLayout.loadSkeleton {
                 shimmer(true)
@@ -135,19 +136,31 @@ class NowFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                createMenu(menu, menuInflater)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                return selectMenu(item)
+            }
+        }, viewLifecycleOwner, Lifecycle.State.STARTED)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         mediaController.unregisterCallback(controllerCallback)
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    private fun createMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.now_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    private fun selectMenu(item: MenuItem): Boolean {
         if (item.itemId != R.id.action_schedule) {
-            return super.onOptionsItemSelected(item)
+            return false
         }
 
         val action =

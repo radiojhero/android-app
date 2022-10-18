@@ -231,10 +231,6 @@ class InteractFragment : Fragment() {
         alert(getString(titleId), getString(messageId))
     }
 
-    private fun alert(title: String, @StringRes messageId: Int) {
-        alert(title, getString(messageId))
-    }
-
     private fun alert(@StringRes titleId: Int, message: String) {
         alert(getString(titleId), message)
     }

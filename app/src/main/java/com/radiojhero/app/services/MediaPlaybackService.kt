@@ -127,10 +127,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             )
 
         mediaSession = MediaSessionCompat(baseContext, "MediaPlaybackService").apply {
-            setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-            )
-
             setCallback(callback)
             setSessionToken(sessionToken)
             setExtras(Bundle(bundle))

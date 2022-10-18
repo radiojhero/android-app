@@ -19,7 +19,7 @@ class PostsFetcher {
     )
 
     companion object {
-        private val query = """
+        private const val query = """
         query getPosts(${'$'}cursor: String!) {
           posts(first: 60, after: ${'$'}cursor) {
             edges {
