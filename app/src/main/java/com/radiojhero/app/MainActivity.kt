@@ -28,11 +28,9 @@ class MainActivity : AppCompatActivity(),
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
-            mediaBrowser.sessionToken.also { token ->
-                val mediaController = MediaControllerCompat(this@MainActivity, token)
-                MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
-            }
-
+            val mediaController =
+                MediaControllerCompat(this@MainActivity, mediaBrowser.sessionToken)
+            MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
             buildTransportControls()
         }
     }
@@ -44,17 +42,18 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun buildTransportControls() {
-        val mediaController = MediaControllerCompat.getMediaController(this)
-
-        binding.fab.setOnClickListener {
-            if (mediaController.playbackState?.state == PlaybackStateCompat.STATE_PLAYING) {
-                mediaController.transportControls.stop()
-            } else {
-                mediaController.transportControls.play()
+        MediaControllerCompat.getMediaController(this).apply {
+            binding.fab.setOnClickListener {
+                if (playbackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+                    transportControls.stop()
+                } else {
+                    transportControls.play()
+                }
             }
-        }
 
-        mediaController.registerCallback(controllerCallback)
+            switchFabIcon(playbackState?.state == PlaybackStateCompat.STATE_PLAYING)
+            registerCallback(controllerCallback)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

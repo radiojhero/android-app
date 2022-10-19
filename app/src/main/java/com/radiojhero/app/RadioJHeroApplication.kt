@@ -1,12 +1,14 @@
 package com.radiojhero.app
 
 import android.app.Application
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.onesignal.OneSignal
 import com.radiojhero.app.fetchers.ConfigFetcher
+import com.radiojhero.app.services.MediaPlaybackService
 import io.sentry.android.core.SentryAndroid
 
 class RadioJHeroApplication : Application() {
@@ -51,6 +53,8 @@ class RadioJHeroApplication : Application() {
                 .createTaskStackBuilder()
                 .startActivities()
         }
+
+        startService(Intent(this, MediaPlaybackService::class.java))
     }
 
     private fun ensureRemoteSettings() {
