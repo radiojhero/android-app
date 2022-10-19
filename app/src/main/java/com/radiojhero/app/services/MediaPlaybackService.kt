@@ -52,7 +52,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
 
+    private var isDirty = false
     private var playbackState = PlaybackStateCompat.STATE_NONE
+        set(value) {
+            field = value
+            if (value != PlaybackStateCompat.STATE_NONE) {
+                isDirty = true
+            }
+        }
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private var bundle = Bundle()
 
@@ -103,6 +110,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
 
             super.onStop()
+            isDirty = false
             clear()
         }
 
@@ -223,6 +231,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private fun displayNotification() {
+        if (!isDirty) {
+            return
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
                 NotificationChannel(
@@ -230,6 +242,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 )
             )
         }
+
+        val playPauseIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(
+            this, PlaybackStateCompat.ACTION_PLAY_PAUSE
+        )
 
         val stopIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(
             this, PlaybackStateCompat.ACTION_STOP
@@ -242,17 +258,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 NotificationCompat.Action(
                     R.drawable.ic_baseline_play_arrow_24,
                     getString(R.string.play),
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this, PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    )
+                    playPauseIntent
                 )
             else
                 NotificationCompat.Action(
                     R.drawable.ic_baseline_pause_24,
                     getString(R.string.pause),
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this, PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    )
+                    playPauseIntent
                 )
 
         startForeground(

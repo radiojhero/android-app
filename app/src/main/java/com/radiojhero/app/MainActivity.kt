@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(),
         MediaControllerCompat.getMediaController(this).apply {
             binding.fab.setOnClickListener {
                 if (playbackState?.state == PlaybackStateCompat.STATE_PLAYING) {
-                    transportControls.stop()
+                    transportControls.pause()
                 } else {
                     transportControls.play()
                 }
