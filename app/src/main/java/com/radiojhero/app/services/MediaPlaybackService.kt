@@ -148,6 +148,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onDestroy()
         player.reset()
         fetcher.stop()
+        mediaSession.release()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
