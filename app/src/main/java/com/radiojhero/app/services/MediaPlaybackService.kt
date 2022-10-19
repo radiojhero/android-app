@@ -272,7 +272,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             NotificationCompat.Builder(this, "MediaPlayback")
                 .setContentTitle(description.title)
                 .setContentText(description.subtitle)
-                .setSubText(description.description)
                 .setLargeIcon(description.iconBitmap)
                 .setContentIntent(mediaSession.controller.sessionActivity)
                 .setDeleteIntent(stopIntent)
@@ -282,8 +281,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 .addAction(action)
                 .setStyle(
                     androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession.sessionToken).setShowActionsInCompactView(0)
-                        .setShowCancelButton(true).setCancelButtonIntent(stopIntent)
+                        .setMediaSession(mediaSession.sessionToken)
+                        .setShowActionsInCompactView(0)
                 )
                 .build()
         )
