@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity(),
     private fun switchFabIcon(toggle: Boolean) {
         binding.fab.apply {
             setImageResource(if (toggle) R.drawable.ic_baseline_pause_24 else R.drawable.ic_baseline_play_arrow_24)
-            contentDescription = if (toggle) "Pause" else "Play"
+            contentDescription = getString(if (toggle) R.string.pause else R.string.play)
         }
     }
 }
