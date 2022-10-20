@@ -16,9 +16,11 @@
         <item name="floatingActionButtonStyle">@style/JHFab</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
+
     <style name="JHActionBar" parent="Widget.MaterialComponents.ActionBar.Primary">
         <item name="background">@color/gray_800</item>
     </style>
+
     <style name="JHFab" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="backgroundTint">@color/white</item>
     </style>

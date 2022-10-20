@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="pt-rBR">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string-array name="appearance_entries" tools:ignore="InconsistentArrays">
         <item>@string/appearance_light</item>
         <item>@string/appearance_dark</item>

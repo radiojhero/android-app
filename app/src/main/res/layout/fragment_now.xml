@@ -134,7 +134,7 @@
 
         <TextView
             android:id="@+id/song_label"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
@@ -142,6 +142,7 @@
             android:text="Song Title Placeholder"
             android:textSize="14sp"
             android:textStyle="bold"
+            app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="@id/right_guideline"
             app:layout_constraintStart_toStartOf="@id/left_guideline"
             app:layout_constraintTop_toBottomOf="@id/program_image_wrapper"
@@ -149,13 +150,14 @@
 
         <TextView
             android:id="@+id/artist_label"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
             android:gravity="center_horizontal"
             android:text="Song Artist Placeholder"
             android:textSize="12sp"
+            app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="@id/right_guideline"
             app:layout_constraintStart_toStartOf="@id/left_guideline"
             app:layout_constraintTop_toBottomOf="@id/song_label"
@@ -205,7 +207,7 @@
 
         <TextView
             android:id="@+id/description_label"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
@@ -213,6 +215,7 @@
             android:paddingBottom="40dp"
             android:text="Program description placeholder. It should wrap a few lines so the skeleton will properly pick them up and display them."
             android:textSize="12sp"
+            app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="@id/right_guideline"
             app:layout_constraintStart_toStartOf="@id/left_guideline"
             app:layout_constraintTop_toBottomOf="@id/now_progress_wrapper"

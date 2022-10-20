@@ -2,6 +2,8 @@
 <resources>
     <color name="gray_100">#FFF3F4F6</color>
     <color name="gray_200">#FFE5E7EB</color>
+    <color name="gray_300">#FFD1D5DB</color>
+    <color name="gray_600">#FF4B5563</color>
     <color name="gray_800">#FF1F2937</color>
     <color name="gray_900">#FF111827</color>
     <color name="black">#FF000000</color>
@@ -12,4 +14,5 @@
     <color name="jh_1_darker">#FF15667C</color>
     <color name="jh_2">#FF00D7EC</color>
     <color name="jh_2_darker">#FF00A9B9</color>
+    <color name="skeleton">@color/gray_300</color>
 </resources>

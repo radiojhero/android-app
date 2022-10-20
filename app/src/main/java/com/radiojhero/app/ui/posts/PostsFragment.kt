@@ -70,6 +70,7 @@ class PostsFragment : Fragment() {
         setupSearchRecycler()
 
         binding.recyclerView.loadSkeleton(R.layout.post_item) {
+            color(R.color.skeleton)
             itemCount(60)
         }
 

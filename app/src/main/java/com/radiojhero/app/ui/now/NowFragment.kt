@@ -120,6 +120,7 @@ class NowFragment : Fragment() {
         _binding = FragmentNowBinding.inflate(inflater, container, false)
         binding.apply {
             constraintLayout.loadSkeleton {
+                color(R.color.skeleton)
                 shimmer(true)
             }
             programImageWrapper.apply {
