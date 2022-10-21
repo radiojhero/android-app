@@ -42,7 +42,7 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
         }
     }
 
-    private var dataSet = mutableListOf<PostsFetcher.Post>()
+    private val dataSet = mutableListOf<PostsFetcher.Post>()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
@@ -64,8 +64,10 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
 
     fun replace(posts: List<PostsFetcher.Post>) {
         val previousItemCount = itemCount
-        dataSet.clear()
-        dataSet.addAll(posts)
+        dataSet.apply {
+            clear()
+            addAll(posts)
+        }
 
         if (posts.size > previousItemCount) {
             notifyItemRangeInserted(previousItemCount, posts.size - previousItemCount)

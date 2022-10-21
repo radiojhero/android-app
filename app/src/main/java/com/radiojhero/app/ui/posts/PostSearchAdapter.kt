@@ -51,7 +51,7 @@ class PostSearchAdapter(private val listener: (post: PostsFetcher.Post) -> Unit)
         }
     }
 
-    private var dataSet = mutableListOf<PostsFetcher.Post>()
+    private val dataSet = mutableListOf<PostsFetcher.Post>()
     private var nbHits = 0
     private var processingTimeMS = 0L
 
@@ -91,15 +91,18 @@ class PostSearchAdapter(private val listener: (post: PostsFetcher.Post) -> Unit)
 
     override fun getItemCount() = dataSet.size + 1
 
-    fun append(posts: MutableList<PostsFetcher.Post>) {
+    fun append(posts: List<PostsFetcher.Post>) {
         val previousItemCount = itemCount
         dataSet.addAll(posts)
         notifyItemRangeInserted(previousItemCount, posts.size)
     }
 
-    fun replace(posts: MutableList<PostsFetcher.Post>) {
+    fun replace(posts: List<PostsFetcher.Post>) {
         val previousItemCount = itemCount
-        dataSet = posts
+        dataSet.apply {
+            clear()
+            addAll(posts)
+        }
         notifyItemChanged(0)
 
         if (posts.size + 1 > previousItemCount) {

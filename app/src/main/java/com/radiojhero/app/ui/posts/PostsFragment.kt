@@ -261,7 +261,7 @@ class PostsFragment : Fragment() {
         }
 
         searchRemainingHits = max(0, response.nbHits - (searchPage + 1) * 60)
-        val hits = deserialize(response.hits).toMutableList()
+        val hits = deserialize(response.hits)
 
         activity?.runOnUiThread {
             if (searchPage > 0) {
