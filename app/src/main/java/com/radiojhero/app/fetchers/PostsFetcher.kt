@@ -52,7 +52,7 @@ class PostsFetcher {
         fun fetch(
             context: Context,
             reset: Boolean,
-            completionHandler: (metadata: MutableList<Post>?) -> Unit
+            completionHandler: (metadata: List<Post>?) -> Unit
         ) {
             if (isFetching) {
                 return
@@ -111,12 +111,6 @@ class PostsFetcher {
             println("Fetching posts...")
             isFetching = true
             NetworkSingleton.getInstance(context).requestQueue.add(currentRequest)
-        }
-
-        fun cancel() {
-            currentRequest?.cancel()
-            currentRequest = null
-            isFetching = false
         }
     }
 }

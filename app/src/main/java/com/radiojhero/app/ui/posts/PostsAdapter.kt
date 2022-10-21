@@ -62,15 +62,10 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
 
     override fun getItemCount() = dataSet.size
 
-    fun append(posts: MutableList<PostsFetcher.Post>) {
+    fun replace(posts: List<PostsFetcher.Post>) {
         val previousItemCount = itemCount
+        dataSet.clear()
         dataSet.addAll(posts)
-        notifyItemRangeInserted(previousItemCount, posts.size)
-    }
-
-    fun replace(posts: MutableList<PostsFetcher.Post>) {
-        val previousItemCount = itemCount
-        dataSet = posts
 
         if (posts.size > previousItemCount) {
             notifyItemRangeInserted(previousItemCount, posts.size - previousItemCount)

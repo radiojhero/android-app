@@ -8,7 +8,10 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.text.trimmedLength
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +34,9 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.PostsFetcher
 import koleton.api.hideSkeleton
 import koleton.api.loadSkeleton
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.math.max
@@ -46,6 +51,7 @@ class PostsFragment : Fragment() {
     private lateinit var mSearchAdapter: PostSearchAdapter
     private lateinit var mSearchLayoutManager: LinearLayoutManager
     private lateinit var mIndex: Index
+    val viewModel: PostsViewModel by viewModels()
 
     private var search = ""
         set(value) {
@@ -69,13 +75,27 @@ class PostsFragment : Fragment() {
         setupRecycler()
         setupSearchRecycler()
 
-        binding.recyclerView.loadSkeleton(R.layout.post_item) {
-            color(R.color.skeleton)
-            itemCount(60)
+        binding.postsView.setOnRefreshListener {
+            viewModel.fetch(true)
         }
 
-        binding.postsView.setOnRefreshListener {
-            fetchPosts()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.uiState.collect {
+                    mAdapter.replace(it)
+
+                    if (it.isEmpty()) {
+                        binding.recyclerView.loadSkeleton(R.layout.post_item) {
+                            color(R.color.skeleton)
+                            itemCount(60)
+                        }
+                        viewModel.fetch(true)
+                    } else {
+                        binding.recyclerView.hideSkeleton()
+                        binding.postsView.isRefreshing = false
+                    }
+                }
+            }
         }
 
         return binding.root
@@ -96,16 +116,6 @@ class PostsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        fetchPosts()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        PostsFetcher.cancel()
     }
 
     private fun createMenu(menu: Menu, inflater: MenuInflater) {
@@ -168,7 +178,7 @@ class PostsFragment : Fragment() {
                 val pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition()
 
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 10) {
-                    fetchPosts(false)
+                    viewModel.fetch(false)
                 }
             }
         })
@@ -182,7 +192,7 @@ class PostsFragment : Fragment() {
         mIndex = client.initIndex(IndexName("wp_searchable_posts"))
 
         mSearchLayoutManager = LinearLayoutManager(requireActivity())
-        binding.recyclerView.layoutManager = mSearchLayoutManager
+        binding.searchRecyclerView.layoutManager = mSearchLayoutManager
         mSearchAdapter = PostSearchAdapter {
             val action =
                 PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(it.link)
@@ -212,25 +222,7 @@ class PostsFragment : Fragment() {
         })
     }
 
-    private fun fetchPosts(reset: Boolean = true) {
-        PostsFetcher.fetch(requireContext(), reset) {
-            binding.recyclerView.hideSkeleton()
-            binding.postsView.isRefreshing = false
-
-            if (it == null) {
-                return@fetch
-            }
-
-            if (reset) {
-                mAdapter.replace(it)
-            } else {
-                mAdapter.append(it)
-            }
-        }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun doSearch() = GlobalScope.launch {
+    private fun doSearch() = lifecycleScope.launch {
         if (search.trimmedLength() == 0 || searchPage > 0 && (searchRemainingHits == 0 || isSearching)) {
             return@launch
         }
