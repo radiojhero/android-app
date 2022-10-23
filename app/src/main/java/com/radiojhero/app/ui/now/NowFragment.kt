@@ -213,10 +213,8 @@ class NowFragment : Fragment() {
 
         val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
         if (djImageSrc == null) {
-            binding.djImage.visibility = View.GONE
             djImageLoaded = true
         } else {
-            binding.djImage.visibility = View.VISIBLE
             Glide.with(this).load(djImageSrc).addListener(djImageListener)
                 .into(binding.djImage)
         }
@@ -229,6 +227,11 @@ class NowFragment : Fragment() {
         if (!programImageLoaded || !djImageLoaded || _binding == null || isMetadataEmpty()) {
             return
         }
+
+        binding.constraintLayout.hideSkeleton()
+
+        val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
+        binding.djImage.visibility = if (djImageSrc == null) View.GONE else View.VISIBLE
 
         binding.programLabel.text = metadata.getString(MediaPlaybackService.PROGRAM_NAME)
         binding.descriptionLabel.text =
@@ -249,7 +252,6 @@ class NowFragment : Fragment() {
                 MediaPlaybackService.SONG_START_TIME
             )
 
-        binding.constraintLayout.hideSkeleton()
         startUpdatingProgress()
     }
 
