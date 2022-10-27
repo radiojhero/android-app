@@ -24,11 +24,10 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
         private val subtitleLabel: TextView = view.findViewById(R.id.subtitle_label)
         private val categoryLabel: TextView = view.findViewById(R.id.category_label)
         private val dateLabel: TextView = view.findViewById(R.id.date_label)
+        private val formatPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd")
+        private val dateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
 
         fun bind(post: PostsFetcher.Post, onClick: (post: PostsFetcher.Post) -> Unit) {
-            val formatPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMd")
-            val dateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
-
             titleLabel.text = HtmlCompat.fromHtml(post.title, HtmlCompat.FROM_HTML_MODE_LEGACY)
             subtitleLabel.text =
                 HtmlCompat.fromHtml(post.subtitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
