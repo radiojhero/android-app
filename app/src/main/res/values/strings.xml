@@ -41,7 +41,7 @@
     <string name="appearance_light">Tema claro</string>
     <string name="appearance_dark">Tema escuro</string>
     <string name="notifications_none">Nenhuma</string>
-    <string name="notifications_shows">Programas ao vivo</string>
-    <string name="notifications_shows_articles">Programas ao vivo e novos artigos</string>
-    <string name="onesignal_notification_accent_color">FF1D8AA8</string>
+    <string name="notifications_shows">Programas</string>
+    <string name="notifications_shows_articles">Programas e novos artigos</string>
+    <string name="onesignal_notification_accent_color" tools:ignore="Typos">FF1D8AA8</string>
 </resources>
