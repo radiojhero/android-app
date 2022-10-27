@@ -15,6 +15,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
@@ -25,6 +26,9 @@ import com.bumptech.glide.request.transition.Transition
 import com.radiojhero.app.R
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.MetadataFetcher
+import com.radiojhero.app.toDate
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.roundToLong
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
@@ -40,6 +44,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_DURATION = "com.radiojhero.app.SONG_DURATION"
         const val SONG_TITLE = "com.radiojhero.app.SONG_TITLE"
         const val SONG_ARTIST = "com.radiojhero.app.SONG_ARTIST"
+        const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
         const val IS_LIVE = "com.radiojhero.app.IS_LIVE"
@@ -122,6 +127,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
+    private val formatPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "HHmm")
+    private val dateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
+
     override fun onCreate() {
         super.onCreate()
 
@@ -169,7 +177,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private fun updateMetadata() {
         val metadata = fetcher.currentData
-        val song = metadata.getJSONArray("song_history").getJSONObject(0)
+        val songHistory = metadata.getJSONArray("song_history")
+        val song = songHistory.getJSONObject(0)
         val program = metadata.getJSONObject("program")
         val programCovers = program.getJSONArray("cover")
         val programImageSrc =
@@ -177,6 +186,16 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         val songProgress = metadata.getDouble("current_time") - song.getDouble("start_time")
         val djs = program.getJSONArray("djs")
         val dj = if (djs.length() > 0) djs.getJSONObject(0) else null
+
+        val formattedSongHistory = mutableListOf<String>()
+
+        for (i in songHistory.length() - 1 downTo 1) {
+            val songInstance = songHistory.getJSONObject(i)
+            val title = songInstance.getString("title")
+            val artist = songInstance.getString("artist")
+            val startTime = (songInstance.getDouble("start_time") * 1000).roundToLong().toDate()
+            formattedSongHistory.add("${dateFormat.format(startTime)} · $artist - $title")
+        }
 
         bundle.apply {
             putString(PROGRAM_IMAGE, programImageSrc)
@@ -186,6 +205,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(PROGRAM_GENRE, program.getString("genre"))
             putString(SONG_TITLE, song.getString("title"))
             putString(SONG_ARTIST, song.getString("artist"))
+            putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putDouble(CURRENT_TIME, metadata.getDouble("current_time"))
             putDouble(SONG_START_TIME, song.getDouble("start_time"))
             putDouble(SONG_DURATION, song.getDouble("duration"))

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.text.format.DateUtils
 import android.view.*
+import android.widget.TextView
 import androidx.core.view.MenuProvider
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
@@ -14,11 +16,9 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.radiojhero.app.R
-import com.radiojhero.app.RoundedOutlineProvider
+import com.radiojhero.app.*
 import com.radiojhero.app.databinding.FragmentNowBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
-import com.radiojhero.app.getNow
 import com.radiojhero.app.services.MediaPlaybackService
 import koleton.api.hideSkeleton
 import koleton.api.loadSkeleton
@@ -160,16 +160,21 @@ class NowFragment : Fragment() {
     }
 
     private fun selectMenu(item: MenuItem): Boolean {
-        if (item.itemId != R.id.action_schedule) {
-            return false
+        if (item.itemId == R.id.action_schedule) {
+            val action =
+                NowFragmentDirections.actionNavigationNowToNavigationWebpage(
+                    ConfigFetcher.getConfig("scheduleUrl") ?: ""
+                )
+            activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
+            return true
         }
 
-        val action =
-            NowFragmentDirections.actionNavigationNowToNavigationWebpage(
-                ConfigFetcher.getConfig("scheduleUrl") ?: ""
-            )
-        activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
-        return true
+        if (item.itemId == R.id.action_song_history) {
+            toggleSongHistory()
+            return true
+        }
+
+        return false
     }
 
     override fun onStart() {
@@ -243,6 +248,19 @@ class NowFragment : Fragment() {
             metadata.getString(MediaPlaybackService.PROGRAM_GENRE)
         )
 
+        binding.songHistory0.visibility = View.GONE
+        binding.songHistory1.visibility = View.GONE
+        binding.songHistory2.visibility = View.GONE
+        binding.songHistory3.visibility = View.GONE
+
+        val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY)!!
+        for ((index, line) in songHistory.withIndex()) {
+            (binding.songHistoryWrapper[index + 1] as TextView).apply {
+                visibility = View.VISIBLE
+                text = line
+            }
+        }
+
         binding.songLabel.text = metadata.getString(MediaPlaybackService.SONG_TITLE)
         binding.artistLabel.text = metadata.getString(MediaPlaybackService.SONG_ARTIST)
 
@@ -292,5 +310,17 @@ class NowFragment : Fragment() {
 
     private fun formatTime(time: Double): String {
         return DateUtils.formatElapsedTime(time.toLong())
+    }
+
+    private var showSongHistory = false
+
+    private fun toggleSongHistory() {
+        showSongHistory = !showSongHistory
+
+        if (showSongHistory) {
+            binding.songHistoryWrapper.expand(250)
+        } else {
+            binding.songHistoryWrapper.collapse(250)
+        }
     }
 }

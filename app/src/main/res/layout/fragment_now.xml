@@ -67,68 +67,140 @@
                 tools:src="@tools:sample/backgrounds/scenic" />
 
             <LinearLayout
-                android:id="@+id/now_program_info"
+                android:id="@+id/program_info_and_history"
                 android:layout_width="0dp"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:background="@color/black_translucent"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="@id/program_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
-                <ImageView
-                    android:id="@+id/dj_image"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:contentDescription="@string/dj_image_description"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintDimensionRatio="H,1:1"
-                    app:layout_constraintEnd_toEndOf="@id/right_guideline"
-                    app:layout_constraintStart_toStartOf="@id/left_guideline"
-                    app:layout_constraintTop_toBottomOf="@id/now_label"
-                    tools:src="@tools:sample/avatars" />
-
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:id="@+id/now_program_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/program_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="sans-serif"
-                        android:maxLines="1"
-                        android:scrollHorizontally="true"
-                        android:text="Program Name"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        tools:ignore="HardcodedText" />
+                    <ImageView
+                        android:id="@+id/dj_image"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:contentDescription="@string/dj_image_description"
+                        android:scaleType="centerCrop"
+                        tools:src="@tools:sample/avatars" />
 
-                    <TextView
-                        android:id="@+id/dj_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="sans-serif-light"
-                        android:maxLines="1"
-                        android:scrollHorizontally="true"
-                        android:text="DJ Name · Genre"
-                        android:textColor="@color/white"
-                        android:textSize="14sp"
-                        tools:ignore="HardcodedText" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/program_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif"
+                            android:maxLines="1"
+                            android:scrollHorizontally="true"
+                            android:text="Program Name"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:id="@+id/dj_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif-light"
+                            android:maxLines="1"
+                            android:scrollHorizontally="true"
+                            android:text="DJ Name · Genre"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            tools:ignore="HardcodedText" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/song_history_wrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/border"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="5dp" />
+
+                    <TextView
+                        android:id="@+id/song_history_0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:text="00:00 · Song Artist - Song Title"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/song_history_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:text="00:00 · Song Artist - Song Title"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/song_history_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:text="00:00 · Song Artist - Song Title"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/song_history_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:text="00:00 · Song Artist - Song Title"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        tools:ignore="HardcodedText" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
