@@ -9,7 +9,6 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -159,8 +158,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSession.release()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return super.onBind(intent)
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
     }
 
     override fun onGetRoot(
