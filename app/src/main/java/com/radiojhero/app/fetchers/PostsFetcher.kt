@@ -98,14 +98,16 @@ class PostsFetcher {
 
                     println("Posts fetched and parsed.")
                     completionHandler(posts)
-                    isFetching = false
                 } catch (error: Throwable) {
                     println("Error while fetching posts: $error")
                     completionHandler(null)
+                } finally {
+                    isFetching = false
                 }
             }, { error ->
                 println("Error while fetching posts: $error")
                 completionHandler(null)
+                isFetching = false
             })
 
             println("Fetching posts...")
