@@ -101,19 +101,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
         override fun onPause() {
-            if (!player.isPlaying) {
-                return
-            }
-
             super.onPause()
             clear()
         }
 
         override fun onStop() {
-            if (!player.isPlaying) {
-                return
-            }
-
             super.onStop()
             isDirty = false
             clear()
@@ -179,7 +171,17 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private fun updateMetadata() {
         if (fetcher.error != null) {
             bundle.putBoolean(HAS_ERROR, true)
-            mediaSession.setExtras(Bundle(bundle))
+            mediaSession.apply {
+                setExtras(Bundle(bundle))
+                setPlaybackState(
+                    stateBuilder.setState(
+                        playbackState,
+                        0,
+                        1f,
+                        SystemClock.elapsedRealtime()
+                    ).build()
+                )
+            }
             return
         }
 
