@@ -47,6 +47,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
         const val IS_LIVE = "com.radiojhero.app.IS_LIVE"
+        const val HAS_ERROR = "com.radiojhero.app.HAS_ERROR"
     }
 
     private val fetcher = MetadataFetcher().apply {
@@ -65,7 +66,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
     private val metadataBuilder = MediaMetadataCompat.Builder()
-    private var bundle = Bundle()
+    private val bundle = Bundle()
 
     private var programImageSrc = ""
 
@@ -176,6 +177,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private fun updateMetadata() {
+        if (fetcher.error != null) {
+            bundle.putBoolean(HAS_ERROR, true)
+            mediaSession.setExtras(Bundle(bundle))
+            return
+        }
+
         val metadata = fetcher.currentData
         val songHistory = metadata.getJSONArray("song_history")
         val song = songHistory.getJSONObject(0)
@@ -212,6 +219,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(PROGRAM_DESCRIPTION, program.getString("description"))
             putDouble(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
             putBoolean(IS_LIVE, metadata.getBoolean("is_live"))
+            putBoolean(HAS_ERROR, false)
         }
 
         metadataBuilder

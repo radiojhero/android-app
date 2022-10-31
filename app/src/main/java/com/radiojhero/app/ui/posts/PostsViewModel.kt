@@ -12,9 +12,15 @@ class PostsViewModel(private val app: Application) : AndroidViewModel(app) {
 
     private val _uiState = MutableStateFlow<List<PostsFetcher.Post>>(emptyList())
     val uiState = _uiState.asStateFlow()
+    private val _hasError = MutableStateFlow(false)
+    val hasError = _hasError.asStateFlow()
 
     fun fetch(reset: Boolean) {
+        _hasError.update { false }
         PostsFetcher.fetch(app, reset) {
+            _hasError.update { _ ->
+                it == null && reset
+            }
             _uiState.update { current ->
                 if (it == null) {
                     current

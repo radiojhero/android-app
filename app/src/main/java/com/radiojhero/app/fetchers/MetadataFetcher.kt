@@ -2,6 +2,7 @@ package com.radiojhero.app.fetchers
 
 import android.content.Context
 import com.android.volley.Request
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.radiojhero.app.getNow
 import org.json.JSONObject
@@ -14,6 +15,7 @@ class MetadataFetcher {
 
     val currentData get() = mData!!
     val lastUpdatedAt get() = mLastUpdatedAt
+    val error get() = mError
     private val interval = 15.0
     private var mLastUpdatedAt = 0.0
     private var mIsRunning = false
@@ -22,6 +24,7 @@ class MetadataFetcher {
     private lateinit var mNetwork: NetworkSingleton
     private var mCurrentRequest: JsonObjectRequest? = null
     private var mCallback: () -> Unit = { }
+    private var mError: VolleyError? = null
 
     fun prepare(context: Context) {
         mNetwork = NetworkSingleton.getInstance(context)
@@ -58,6 +61,7 @@ class MetadataFetcher {
         mCurrentRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { data ->
+                mError = null
                 mData = data
                 mLastUpdatedAt = getNow()
                 println("Metadata fetched and parsed.")
@@ -84,6 +88,8 @@ class MetadataFetcher {
             },
             { error ->
                 println("Error while fetching metadata: $error")
+                mError = error
+                mCallback()
                 setTimeout(interval)
             }
         )

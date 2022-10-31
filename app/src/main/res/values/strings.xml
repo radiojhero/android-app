@@ -44,5 +44,7 @@
     <string name="notifications_none">Nenhuma</string>
     <string name="notifications_shows">Programas</string>
     <string name="notifications_shows_articles">Programas e novos artigos</string>
+    <string name="label_now_error">Mil desculpas, houve algum problema na hora de exibir o que está rolando agora na programação da J-Hero. Com sorte, é um problema temporário, e logo, logo as coisas vão se normalizar.</string>
     <string name="onesignal_notification_accent_color" tools:ignore="Typos">FF1D8AA8</string>
+    <string name="posts_error">Não foi possível obter a lista de artigos. Tente novamente mais tarde.</string>
 </resources>

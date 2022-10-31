@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.content.Context.SEARCH_SERVICE
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.trimmedLength
 import androidx.core.view.MenuProvider
@@ -91,6 +92,21 @@ class PostsFragment : Fragment() {
                         }
                         viewModel.fetch(true)
                     } else {
+                        binding.recyclerView.hideSkeleton()
+                        binding.postsView.isRefreshing = false
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.hasError.collect {
+                    if (it && mAdapter.itemCount == 0) {
+                        AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.posts_error)
+                            .setPositiveButton(R.string.button_dismiss, null)
+                            .show()
                         binding.recyclerView.hideSkeleton()
                         binding.postsView.isRefreshing = false
                     }

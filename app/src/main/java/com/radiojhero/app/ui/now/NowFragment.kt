@@ -108,6 +108,8 @@ class NowFragment : Fragment() {
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onExtrasChanged(extras: Bundle?) {
             metadata = extras!!
+            binding.error.visibility = View.GONE
+            binding.constraintLayout.visibility = View.VISIBLE
             updateMetadata()
         }
     }
@@ -208,7 +210,17 @@ class NowFragment : Fragment() {
         metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME, -1.0) == -1.0
 
     private fun updateMetadata() {
-        if (_binding == null || isMetadataEmpty()) {
+        if (_binding == null) {
+            return
+        }
+
+        if (metadata.getBoolean(MediaPlaybackService.HAS_ERROR)) {
+            binding.error.visibility = View.VISIBLE
+            binding.constraintLayout.visibility = View.GONE
+            return
+        }
+
+        if (isMetadataEmpty()) {
             return
         }
 
