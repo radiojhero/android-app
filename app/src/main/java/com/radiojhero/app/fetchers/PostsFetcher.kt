@@ -3,6 +3,7 @@ package com.radiojhero.app.fetchers
 import android.content.Context
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
+import com.radiojhero.app.getNow
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,6 +17,7 @@ class PostsFetcher {
         val coverImage: String = "",
         val link: String = "",
         val date: Date = Date(),
+        val random: Long = (getNow() * 1000).toLong(),
     )
 
     companion object {
