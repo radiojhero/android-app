@@ -29,6 +29,8 @@ class RadioJHeroApplication : Application() {
             }
         }
 
+        startService(Intent(this, MediaPlaybackService::class.java))
+
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.setRequiresUserPrivacyConsent(true)
         OneSignal.setLocationShared(false)
@@ -52,8 +54,6 @@ class RadioJHeroApplication : Application() {
                 .createTaskStackBuilder()
                 .startActivities()
         }
-
-        startService(Intent(this, MediaPlaybackService::class.java))
     }
 
     private fun ensureRemoteSettings() {
