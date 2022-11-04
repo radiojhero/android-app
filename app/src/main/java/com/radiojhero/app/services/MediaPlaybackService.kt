@@ -169,7 +169,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private fun updateMetadata() {
-        if (fetcher.error != null) {
+        if (fetcher.error != null || fetcher.currentData == null) {
             bundle.putBoolean(HAS_ERROR, true)
             mediaSession.apply {
                 setExtras(Bundle(bundle))
@@ -185,7 +185,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             return
         }
 
-        val metadata = fetcher.currentData
+        val metadata = fetcher.currentData!!
         val songHistory = metadata.getJSONArray("song_history")
         val song = songHistory.getJSONObject(0)
         val program = metadata.getJSONObject("program")

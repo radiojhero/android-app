@@ -13,7 +13,7 @@ import kotlin.math.min
 
 class MetadataFetcher {
 
-    val currentData get() = mData!!
+    val currentData get() = mData
     val lastUpdatedAt get() = mLastUpdatedAt
     val error get() = mError
     private val interval = 15.0
