@@ -23,7 +23,6 @@ class RadioJHeroApplication : Application() {
             SentryAndroid.init(this) {
                 it.apply {
                     dsn = ConfigFetcher.getConfig("sentryUrl")
-                    isDebug = true
                     isEnableAutoSessionTracking = true
                     sampleRate = 1.0
                 }
