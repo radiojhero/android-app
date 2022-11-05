@@ -71,6 +71,7 @@ dependencies {
     implementation 'com.onesignal:OneSignal:4.8.2'
     implementation 'io.sentry:sentry-android:6.6.0'
     implementation 'com.algolia:algoliasearch-client-kotlin:2.1.1'
+    implementation 'io.ktor:ktor-client-android:2.1.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
