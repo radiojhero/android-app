@@ -4,6 +4,10 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.onesignal.OneSignal
@@ -11,11 +15,15 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import io.sentry.android.core.SentryAndroid
 
-class RadioJHeroApplication : Application() {
+class RadioJHeroApplication : Application(), LifecycleEventObserver {
+
+    private var mediaServiceStarted = false
+
     override fun onCreate() {
         super.onCreate()
         detectNightModeFromSettings()
         ensureRemoteSettings()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         println("debug = ${BuildConfig.DEBUG}")
 
@@ -28,8 +36,6 @@ class RadioJHeroApplication : Application() {
                 }
             }
         }
-
-        startService(Intent(this, MediaPlaybackService::class.java))
 
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.setRequiresUserPrivacyConsent(true)
@@ -56,6 +62,12 @@ class RadioJHeroApplication : Application() {
         }
     }
 
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (event == Lifecycle.Event.ON_START) {
+            startMediaService()
+        }
+    }
+
     private fun ensureRemoteSettings() {
         ConfigFetcher.start(this)
 
@@ -69,5 +81,19 @@ class RadioJHeroApplication : Application() {
     private fun detectNightModeFromSettings() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         switchTheme(sharedPreferences.getString("appearance", "system") ?: "system")
+    }
+
+    private fun startMediaService() {
+        if (mediaServiceStarted) {
+            return
+        }
+
+        try {
+            startService(Intent(this, MediaPlaybackService::class.java))
+            mediaServiceStarted = true
+        } catch (error: IllegalStateException) {
+            println("MediaPlaybackService not started, app is probably in background; retrying later...")
+            println(error)
+        }
     }
 }
