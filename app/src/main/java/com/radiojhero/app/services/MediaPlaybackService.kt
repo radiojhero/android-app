@@ -110,13 +110,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             isDirty = false
             clear()
         }
-
-        private fun clear() {
-            player.reset()
-            println("Player stopped.")
-            playbackState = PlaybackStateCompat.STATE_NONE
-            updateMetadata()
-        }
     }
 
     private val formatPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "HHmm")
@@ -166,6 +159,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         parentMediaId: String, result: Result<List<MediaBrowserCompat.MediaItem>>
     ) {
         result.sendResult(null)
+    }
+
+    private fun clear() {
+        player.reset()
+        println("Player stopped.")
+        playbackState = PlaybackStateCompat.STATE_NONE
+        updateMetadata()
     }
 
     private fun updateMetadata() {
