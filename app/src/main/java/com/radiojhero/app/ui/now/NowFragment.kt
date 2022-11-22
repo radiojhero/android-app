@@ -30,8 +30,7 @@ import kotlin.math.roundToInt
 
 class NowFragment : Fragment() {
 
-    private var _binding: FragmentNowBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentNowBinding? = null
 
     private var progressTimer: Timer? = null
     private var lastUpdatedAt = 0.0
@@ -108,8 +107,8 @@ class NowFragment : Fragment() {
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onExtrasChanged(extras: Bundle?) {
             metadata = extras!!
-            binding.error.visibility = View.GONE
-            binding.constraintLayout.visibility = View.VISIBLE
+            binding?.error?.visibility = View.GONE
+            binding?.constraintLayout?.visibility = View.VISIBLE
             updateMetadata()
         }
     }
@@ -119,8 +118,8 @@ class NowFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentNowBinding.inflate(inflater, container, false)
-        binding.apply {
+        val inflated = FragmentNowBinding.inflate(inflater, container, false)
+        inflated.apply {
             constraintLayout.loadSkeleton {
                 color(R.color.skeleton)
                 shimmer(true)
@@ -135,8 +134,9 @@ class NowFragment : Fragment() {
             }
         }
 
+        binding = inflated
         setupMediaController()
-        return binding.root
+        return inflated.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -154,7 +154,7 @@ class NowFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         mediaController.unregisterCallback(controllerCallback)
-        _binding = null
+        binding = null
     }
 
     private fun createMenu(menu: Menu, inflater: MenuInflater) {
@@ -210,9 +210,7 @@ class NowFragment : Fragment() {
         metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME, -1.0) == -1.0
 
     private fun updateMetadata() {
-        if (_binding == null) {
-            return
-        }
+        val binding = this.binding ?: return
 
         if (metadata.getBoolean(MediaPlaybackService.HAS_ERROR)) {
             binding.error.visibility = View.VISIBLE
@@ -241,7 +239,9 @@ class NowFragment : Fragment() {
     }
 
     private fun maybeFinishUpdatingMetadata() {
-        if (!programImageLoaded || !djImageLoaded || _binding == null || isMetadataEmpty()) {
+        val binding = this.binding ?: return
+
+        if (!programImageLoaded || !djImageLoaded || isMetadataEmpty()) {
             return
         }
 
@@ -306,7 +306,9 @@ class NowFragment : Fragment() {
     }
 
     private fun updateProgress() {
-        if (_binding == null) {
+        val binding = this.binding
+
+        if (binding == null) {
             stopUpdatingProgress()
             return
         }
@@ -330,9 +332,9 @@ class NowFragment : Fragment() {
         showSongHistory = !showSongHistory
 
         if (showSongHistory) {
-            binding.songHistoryWrapper.expand(250)
+            binding?.songHistoryWrapper?.expand(250)
         } else {
-            binding.songHistoryWrapper.collapse(250)
+            binding?.songHistoryWrapper?.collapse(250)
         }
     }
 }

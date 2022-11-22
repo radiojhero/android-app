@@ -21,8 +21,7 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 
 class WebPageFragment : Fragment() {
 
-    private var _binding: FragmentWebpageBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentWebpageBinding? = null
 
     private val args: WebPageFragmentArgs by navArgs()
     private var hasLoaded = false
@@ -31,15 +30,16 @@ class WebPageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWebpageBinding.inflate(inflater, container, false)
+        val inflated = FragmentWebpageBinding.inflate(inflater, container, false)
+        binding = inflated
         updatePaddingBottom()
-        return binding.root
+        return inflated.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         hasLoaded = false
-        _binding = null
+        binding = null
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -56,13 +56,13 @@ class WebPageFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.STARTED)
 
-        val webView = binding.webpageWebview
+        val webView = binding?.webpageWebview ?: return
 
         webView.webViewClient = object : WebViewClientCompat() {
             override fun onPageStarted(webView: WebView, url: String, favicon: Bitmap?) {
                 super.onPageStarted(webView, url, favicon)
-                binding.webpageProgress.visibility = View.GONE
-                binding.webpageWebview.visibility = View.VISIBLE
+                binding?.webpageProgress?.visibility = View.GONE
+                binding?.webpageWebview?.visibility = View.VISIBLE
                 updatePaddingBottom()
             }
 
@@ -109,7 +109,7 @@ class WebPageFragment : Fragment() {
 
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, binding.webpageWebview.url)
+            putExtra(Intent.EXTRA_TEXT, binding?.webpageWebview?.url ?: "")
             type = "text/plain"
         }
 
@@ -119,7 +119,7 @@ class WebPageFragment : Fragment() {
     }
 
     private fun updatePaddingBottom() {
-        val webView = binding.webpageWebview
+        val webView = binding?.webpageWebview ?: return
         val paddingBottom = webView.paddingBottom / resources.displayMetrics.density
         webView.loadUrl("javascript:document.documentElement.style.setProperty('--android-extra-bottom-padding', '${paddingBottom}px')")
     }

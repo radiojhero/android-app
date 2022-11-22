@@ -45,8 +45,7 @@ import kotlin.math.max
 
 class PostsFragment : Fragment() {
 
-    private var _binding: FragmentPostsBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentPostsBinding? = null
     private lateinit var mAdapter: PostsAdapter
     private lateinit var mLayoutManager: GridLayoutManager
     private lateinit var mSearchAdapter: PostSearchAdapter
@@ -72,11 +71,12 @@ class PostsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPostsBinding.inflate(inflater, container, false)
+        val inflated = FragmentPostsBinding.inflate(inflater, container, false)
+        binding = inflated
         setupRecycler()
         setupSearchRecycler()
 
-        binding.postsView.setOnRefreshListener {
+        inflated.postsView.setOnRefreshListener {
             viewModel.fetch(true)
         }
 
@@ -86,14 +86,14 @@ class PostsFragment : Fragment() {
                     mAdapter.replace(it)
 
                     if (it.isEmpty()) {
-                        binding.recyclerView.loadSkeleton(R.layout.post_item) {
+                        inflated.recyclerView.loadSkeleton(R.layout.post_item) {
                             color(R.color.skeleton)
                             itemCount(60)
                         }
                         viewModel.fetch(true)
                     } else {
-                        binding.recyclerView.hideSkeleton()
-                        binding.postsView.isRefreshing = false
+                        inflated.recyclerView.hideSkeleton()
+                        inflated.postsView.isRefreshing = false
                     }
                 }
             }
@@ -107,14 +107,14 @@ class PostsFragment : Fragment() {
                             .setMessage(R.string.posts_error)
                             .setPositiveButton(R.string.button_dismiss, null)
                             .show()
-                        binding.recyclerView.hideSkeleton()
-                        binding.postsView.isRefreshing = false
+                        inflated.recyclerView.hideSkeleton()
+                        inflated.postsView.isRefreshing = false
                     }
                 }
             }
         }
 
-        return binding.root
+        return inflated.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,10 +131,11 @@ class PostsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     private fun createMenu(menu: Menu, inflater: MenuInflater) {
+        val binding = this.binding ?: return
         inflater.inflate(R.menu.articles_menu, menu)
         val searchView =
             menu.findItem(R.id.action_search).actionView as SearchView
@@ -167,6 +168,7 @@ class PostsFragment : Fragment() {
     private fun selectMenu(item: MenuItem): Boolean = item.itemId == R.id.action_search
 
     private fun setupRecycler() {
+        val binding = this.binding ?: return
         val columns =
             max(1f, resources.displayMetrics.widthPixels / resources.displayMetrics.density / 320f)
         mLayoutManager = GridLayoutManager(requireActivity(), columns.toInt())
@@ -201,6 +203,7 @@ class PostsFragment : Fragment() {
     }
 
     private fun setupSearchRecycler() {
+        val binding = this.binding ?: return
         val client = ClientSearch(
             applicationID = ApplicationID(ConfigFetcher.getConfig("algoliaApp")!!),
             apiKey = APIKey(ConfigFetcher.getConfig("algoliaKey")!!)
