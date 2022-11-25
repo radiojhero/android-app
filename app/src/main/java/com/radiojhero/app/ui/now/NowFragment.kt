@@ -106,7 +106,10 @@ class NowFragment : Fragment() {
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onExtrasChanged(extras: Bundle?) {
-            metadata = extras!!
+            metadata = extras ?: Bundle().apply {
+                putBoolean(MediaPlaybackService.HAS_ERROR, true)
+            }
+
             binding?.error?.visibility = View.GONE
             binding?.constraintLayout?.visibility = View.VISIBLE
             updateMetadata()
@@ -265,7 +268,7 @@ class NowFragment : Fragment() {
         binding.songHistory2.visibility = View.GONE
         binding.songHistory3.visibility = View.GONE
 
-        val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY)!!
+        val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY) ?: emptyArray()
         for ((index, line) in songHistory.withIndex()) {
             (binding.songHistoryWrapper[index + 1] as TextView).apply {
                 visibility = View.VISIBLE

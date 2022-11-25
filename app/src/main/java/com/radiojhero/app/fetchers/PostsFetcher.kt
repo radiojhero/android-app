@@ -93,7 +93,7 @@ class PostsFetcher {
                                 node.getJSONObject("featuredImage").getJSONObject("node")
                                     .getString("sourceUrl"),
                                 node.getString("link").replace("wp.", ""),
-                                dateFormatter.parse(node.getString("dateGmt"))!!
+                                dateFormatter.parse(node.getString("dateGmt")) ?: Date()
                             )
                         )
                     }

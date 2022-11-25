@@ -21,8 +21,7 @@ import com.radiojhero.app.services.MediaPlaybackService
 
 class InteractFragment : Fragment() {
 
-    private var _binding: FragmentInteractBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentInteractBinding? = null
 
     private var availability = false
     private lateinit var network: NetworkSingleton
@@ -31,7 +30,7 @@ class InteractFragment : Fragment() {
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onExtrasChanged(extras: Bundle?) {
-            maybeToggleForm(extras!!.getBoolean(MediaPlaybackService.IS_LIVE))
+            maybeToggleForm(extras?.getBoolean(MediaPlaybackService.IS_LIVE) ?: false)
         }
     }
 
@@ -41,65 +40,68 @@ class InteractFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         network = NetworkSingleton.getInstance(requireContext())
-        _binding = FragmentInteractBinding.inflate(inflater, container, false)
-
-        binding.sendButton.setOnClickListener {
-            makeSongRequest()
-        }
-
-        binding.editName.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                return@setOnFocusChangeListener
+        val inflated = FragmentInteractBinding.inflate(inflater, container, false)
+        inflated.apply {
+            sendButton.setOnClickListener {
+                makeSongRequest()
             }
 
-            validateName()
-        }
+            editName.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    return@setOnFocusChangeListener
+                }
 
-        binding.editSong.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                return@setOnFocusChangeListener
+                validateName()
             }
 
-            validateSong()
-        }
+            editSong.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    return@setOnFocusChangeListener
+                }
 
-        binding.editSong.addTextChangedListener {
-            binding.editMessage.apply {
-                val value = text?.trim() ?: ""
-                if (value.isEmpty() || value.length >= 10) {
-                    error = null
+                validateSong()
+            }
+
+            editSong.addTextChangedListener {
+                editMessage.apply {
+                    val value = text?.trim() ?: ""
+                    if (value.isEmpty() || value.length >= 10) {
+                        error = null
+                    }
+                }
+            }
+
+            editMessage.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    return@setOnFocusChangeListener
+                }
+
+                validateMessage()
+            }
+
+            editMessage.addTextChangedListener {
+                editSong.apply {
+                    val value = text?.trim() ?: ""
+                    if (value.isEmpty() || value.length >= 8) {
+                        error = null
+                    }
                 }
             }
         }
 
-        binding.editMessage.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                return@setOnFocusChangeListener
-            }
-
-            validateMessage()
-        }
-
-        binding.editMessage.addTextChangedListener {
-            binding.editSong.apply {
-                val value = text?.trim() ?: ""
-                if (value.isEmpty() || value.length >= 8) {
-                    error = null
-                }
-            }
-        }
+        binding = inflated
 
         mediaController = MediaControllerCompat.getMediaController(requireActivity()).apply {
             registerCallback(controllerCallback)
             maybeToggleForm(extras.getBoolean(MediaPlaybackService.IS_LIVE))
         }
 
-        return binding.root
+        return inflated.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     @Synchronized
@@ -109,6 +111,8 @@ class InteractFragment : Fragment() {
         if (!validateFields()) {
             return
         }
+
+        val binding = this.binding ?: return
 
         val song = (binding.editSong.text ?: "").toString()
         val url = ConfigFetcher.getConfig("interactUrl") ?: ""
@@ -159,14 +163,12 @@ class InteractFragment : Fragment() {
     }
 
     private fun validateFields(): Boolean {
-        var isValid = true
-        isValid = validateName() && isValid
-        isValid = validateSong() && isValid
-        isValid = validateMessage() && isValid
-        return isValid
+        return validateName() && validateSong() && validateMessage()
     }
 
     private fun validateName(): Boolean {
+        val binding = this.binding ?: return false
+
         binding.editName.apply {
             val value = text?.trim() ?: ""
             error = when {
@@ -180,6 +182,8 @@ class InteractFragment : Fragment() {
     }
 
     private fun validateSong(): Boolean {
+        val binding = this.binding ?: return false
+
         binding.editSong.apply {
             val value = text?.trim() ?: ""
             error = when {
@@ -197,6 +201,8 @@ class InteractFragment : Fragment() {
     }
 
     private fun validateMessage(): Boolean {
+        val binding = this.binding ?: return false
+
         binding.editMessage.apply {
             val value = text?.trim() ?: ""
             error = when {
@@ -214,9 +220,8 @@ class InteractFragment : Fragment() {
     }
 
     private fun maybeToggleForm(toggle: Boolean) {
-        if (_binding == null) {
-            return
-        }
+        val binding = this.binding ?: return
+
 
         if (availability) {
             return
