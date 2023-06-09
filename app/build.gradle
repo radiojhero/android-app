@@ -30,6 +30,7 @@ android {
             resValue "string", "version_name", defaultConfig.versionName
             resValue "string", "version_name_and_text", "v${defaultConfig.versionName} - ${madeBy}"
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
