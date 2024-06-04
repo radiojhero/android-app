@@ -11,6 +11,9 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.onesignal.OneSignal
+import com.onesignal.debug.LogLevel
+import com.onesignal.notifications.INotificationClickEvent
+import com.onesignal.notifications.INotificationClickListener
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import io.sentry.android.core.SentryAndroid
@@ -37,29 +40,30 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
             }
         }
 
-        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
-        OneSignal.setRequiresUserPrivacyConsent(true)
-        OneSignal.setLocationShared(false)
-        OneSignal.setAppId(ConfigFetcher.getConfig("onesignalApp") ?: "")
-        OneSignal.initWithContext(this)
-        OneSignal.setNotificationOpenedHandler {
-            val url = it.notification.additionalData?.getString("myurl")
-                ?: return@setNotificationOpenedHandler
+        OneSignal.Debug.logLevel = LogLevel.VERBOSE
+        OneSignal.consentRequired = true
+        OneSignal.initWithContext(this, ConfigFetcher.getConfig("onesignalApp") ?: "")
+        OneSignal.Location.isShared = false
+        OneSignal.Notifications.addClickListener(object : INotificationClickListener {
+            override fun onClick(event: INotificationClickEvent) {
+                val url = event.notification.additionalData?.getString("myurl")
+                    ?: return
 
-            if (Uri.parse(url).host != ConfigFetcher.getConfig("host")) {
-                return@setNotificationOpenedHandler
+                if (Uri.parse(url).host != ConfigFetcher.getConfig("host")) {
+                    return
+                }
+
+                val args = Bundle()
+                args.putString("url", url)
+
+                NavDeepLinkBuilder(this@RadioJHeroApplication)
+                    .setGraph(R.navigation.mobile_navigation)
+                    .setDestination(R.id.navigation_webpage)
+                    .setArguments(args)
+                    .createTaskStackBuilder()
+                    .startActivities()
             }
-
-            val args = Bundle()
-            args.putString("url", url)
-
-            NavDeepLinkBuilder(this)
-                .setGraph(R.navigation.mobile_navigation)
-                .setDestination(R.id.navigation_webpage)
-                .setArguments(args)
-                .createTaskStackBuilder()
-                .startActivities()
-        }
+        })
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
