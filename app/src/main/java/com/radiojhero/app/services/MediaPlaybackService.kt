@@ -6,17 +6,22 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.media.AudioAttributesCompat
+import androidx.media.AudioFocusRequestCompat
+import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
@@ -29,6 +34,7 @@ import com.radiojhero.app.toDate
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToLong
+
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 
@@ -50,18 +56,22 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val HAS_ERROR = "com.radiojhero.app.HAS_ERROR"
     }
 
+    private val ROOT = "@root@"
+
     private val fetcher = MetadataFetcher().apply {
         prepare(this@MediaPlaybackService)
     }
 
+    private lateinit var audioManager: AudioManager
+    private lateinit var audioFocus: AudioFocusRequestCompat
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
 
     private var isDirty = false
-    private var playbackState = PlaybackStateCompat.STATE_NONE
+    private var playbackState = PlaybackStateCompat.STATE_STOPPED
         set(value) {
             field = value
-            if (value != PlaybackStateCompat.STATE_NONE) {
+            if (value != PlaybackStateCompat.STATE_STOPPED) {
                 isDirty = true
             }
         }
@@ -82,31 +92,62 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
             if (player.isPlaying) {
+                println("Player already playing, bail.")
                 return
             }
 
+            println("Starting player...")
+
+            audioFocus = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(
+                    AudioAttributesCompat.Builder()
+                        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                .setOnAudioFocusChangeListener {
+                    onStop()
+                }
+                .build()
+
             player.apply {
-                val source = ConfigFetcher.getConfig("streamingUrl")
-                setDataSource(source)
+                val source = reinitPlayer()
                 prepareAsync()
+                playbackState = PlaybackStateCompat.STATE_BUFFERING
                 setOnPreparedListener {
+                    println("Requesting audio focus...")
+                    val result = AudioManagerCompat.requestAudioFocus(audioManager, audioFocus)
+
+                    if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                        println("Failed to get audio focus.")
+                        return@setOnPreparedListener
+                    }
+
                     println("Playing at $source")
                     it.start()
+                    playbackState = PlaybackStateCompat.STATE_PLAYING
+                    updateMetadata()
                 }
             }
 
-            super.onPlay()
-            playbackState = PlaybackStateCompat.STATE_PLAYING
             updateMetadata()
         }
 
+        override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+            onPlay()
+        }
+
+        override fun onPlayFromSearch(query: String?, extras: Bundle?) {
+            onPlay()
+        }
+
         override fun onPause() {
-            super.onPause()
+            println("Pausing player...")
             clear()
         }
 
         override fun onStop() {
-            super.onStop()
+            println("Stopping player...")
             isDirty = false
             clear()
         }
@@ -118,13 +159,19 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
+        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+
         fetcher.start {
             updateMetadata()
         }
 
         stateBuilder =
             PlaybackStateCompat.Builder().setActions(
-                PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_PLAY_PAUSE
+                PlaybackStateCompat.ACTION_PLAY or
+                        PlaybackStateCompat.ACTION_STOP or
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE or
+                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
+                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
             )
 
         mediaSession = MediaSessionCompat(baseContext, "MediaPlaybackService").apply {
@@ -141,7 +188,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onDestroy()
         player.reset()
         fetcher.stop()
-        mediaSession.release()
+        mediaSession.run {
+            isActive = false
+            release()
+        }
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -152,19 +202,41 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     override fun onGetRoot(
         clientPackageName: String, clientUid: Int, rootHints: Bundle?
     ): BrowserRoot {
-        return BrowserRoot("@empty@", null)
+        return BrowserRoot(ROOT, null)
     }
 
     override fun onLoadChildren(
         parentMediaId: String, result: Result<List<MediaBrowserCompat.MediaItem>>
     ) {
-        result.sendResult(null)
+        result.sendResult(
+            if (parentMediaId == ROOT) listOf(
+                MediaBrowserCompat.MediaItem(
+                    MediaDescriptionCompat.Builder()
+                        .setTitle("MP3 96 kbps")
+                        .setMediaId("MP3 96 kbps")
+                        .build(),
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                ),
+            ) else null
+        )
+    }
+
+    private fun reinitPlayer(): String? {
+        try {
+            player.reset()
+        } catch (_: Throwable) {
+            // never mind exceptions
+        }
+        val source = ConfigFetcher.getConfig("streamingUrl")
+        player.setDataSource(source)
+        return source
     }
 
     private fun clear() {
-        player.reset()
+        reinitPlayer()
+        AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocus)
         println("Player stopped.")
-        playbackState = PlaybackStateCompat.STATE_NONE
+        playbackState = PlaybackStateCompat.STATE_STOPPED
         updateMetadata()
     }
 
@@ -286,7 +358,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         val description = mediaSession.controller.metadata.description
 
         val action =
-            if (playbackState == PlaybackStateCompat.STATE_NONE)
+            if (playbackState == PlaybackStateCompat.STATE_STOPPED)
                 NotificationCompat.Action(
                     R.drawable.ic_baseline_play_arrow_24,
                     getString(R.string.play),

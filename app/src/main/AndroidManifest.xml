@@ -15,8 +15,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RadioJHero"
-        tools:targetApi="o">
+        tools:targetApi="upside_down_cake">
 
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <meta-data
+            android:name="androidx.car.app.TintableAttributionIcon"
+            android:resource="@drawable/ic_stat_onesignal_default" />
         <meta-data
             android:name="io.sentry.auto-init"
             android:value="false" />

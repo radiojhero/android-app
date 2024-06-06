@@ -37,23 +37,28 @@ class MainActivity : AppCompatActivity(),
 
     private var controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            switchFabIcon(state?.state == PlaybackStateCompat.STATE_PLAYING)
+            switchFabIcon(!isStopped(state?.state))
         }
     }
 
     private fun buildTransportControls() {
         MediaControllerCompat.getMediaController(this).apply {
             binding.fab.setOnClickListener {
-                if (playbackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+                if (!isStopped(playbackState?.state)) {
                     transportControls.pause()
                 } else {
                     transportControls.play()
                 }
             }
 
-            switchFabIcon(playbackState?.state == PlaybackStateCompat.STATE_PLAYING)
+            transportControls.prepare()
+            switchFabIcon(!isStopped(playbackState?.state))
             registerCallback(controllerCallback)
         }
+    }
+
+    private fun isStopped(state: Int?): Boolean {
+        return state != PlaybackStateCompat.STATE_PLAYING && state != PlaybackStateCompat.STATE_BUFFERING
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
