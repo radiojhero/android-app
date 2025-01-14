@@ -17,17 +17,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.algolia.search.client.ClientSearch
-import com.algolia.search.client.Index
-import com.algolia.search.dsl.attributesToHighlight
-import com.algolia.search.dsl.attributesToRetrieve
-import com.algolia.search.dsl.attributesToSnippet
-import com.algolia.search.dsl.query
-import com.algolia.search.model.APIKey
-import com.algolia.search.model.ApplicationID
-import com.algolia.search.model.IndexName
-import com.algolia.search.model.response.ResponseSearch
-import com.algolia.search.model.search.IgnorePlurals
+import com.algolia.client.api.SearchClient
+import com.algolia.client.model.search.*
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentPostsBinding
 import com.radiojhero.app.endEditing
@@ -50,7 +41,8 @@ class PostsFragment : Fragment() {
     private lateinit var mLayoutManager: GridLayoutManager
     private lateinit var mSearchAdapter: PostSearchAdapter
     private lateinit var mSearchLayoutManager: LinearLayoutManager
-    private lateinit var mIndex: Index
+    private lateinit var mClient: SearchClient
+    private val INDEX = "wp_searchable_posts"
     val viewModel: PostsViewModel by viewModels()
 
     private var search = ""
@@ -204,11 +196,10 @@ class PostsFragment : Fragment() {
 
     private fun setupSearchRecycler() {
         val binding = this.binding ?: return
-        val client = ClientSearch(
-            applicationID = ApplicationID(ConfigFetcher.getConfig("algoliaApp")!!),
-            apiKey = APIKey(ConfigFetcher.getConfig("algoliaKey")!!)
+        mClient = SearchClient(
+            appId = ConfigFetcher.getConfig("algoliaApp")!!,
+            apiKey = ConfigFetcher.getConfig("algoliaKey")!!
         )
-        mIndex = client.initIndex(IndexName("wp_searchable_posts"))
 
         mSearchLayoutManager = LinearLayoutManager(requireActivity())
         binding.searchRecyclerView.layoutManager = mSearchLayoutManager
@@ -247,39 +238,38 @@ class PostsFragment : Fragment() {
         }
 
         isSearching = true
-        val query = query {
-            query = search
-            filters = "post_type:post OR post_type:page"
-            page = searchPage
-            ignorePlurals = IgnorePlurals.True
-            advancedSyntax = true
-            hitsPerPage = 60
-            highlightPreTag = "<mark>"
-            highlightPostTag = "</mark>"
-            snippetEllipsisText = "…"
-            attributesToRetrieve {
-                +"post_title"
-                +"content"
-                +"permalink"
-                +"images"
-            }
-            attributesToHighlight {
-                +"post_title"
-                +"content"
-            }
-            attributesToSnippet {
-                +"content"
-            }
-        }
+        val query = SearchParamsObject(
+            query = search,
+            page = searchPage,
+            ignorePlurals = IgnorePlurals.of(true),
+            advancedSyntax = true,
+            hitsPerPage = 60,
+            highlightPreTag = "<mark>",
+            highlightPostTag = "</mark>",
+            snippetEllipsisText = "…",
+            attributesToRetrieve = arrayListOf(
+                "post_title",
+                "content",
+                "permalink",
+                "images",
+            ),
+            attributesToHighlight = arrayListOf(
+                "post_title",
+                "content",
+            ),
+            attributesToSnippet = arrayListOf(
+                "content",
+            ),
+        )
 
         val response = withContext(Dispatchers.IO) {
-            mIndex.search(query)
+            mClient.searchSingleIndex(INDEX, query)
         }
         if (response.query != search) {
             return@launch
         }
 
-        searchRemainingHits = max(0, response.nbHits - (searchPage + 1) * 60)
+        searchRemainingHits = max(0, (response.nbHits ?: 0) - (searchPage + 1) * 60)
         val hits = deserialize(response.hits)
 
         activity?.runOnUiThread {
@@ -287,20 +277,20 @@ class PostsFragment : Fragment() {
                 mSearchAdapter.append(hits)
             } else {
                 mSearchAdapter.replace(hits)
-                mSearchAdapter.setStats(response.nbHits, response.processingTimeMS)
+                mSearchAdapter.setStats(response.nbHits ?: 0, response.processingTimeMS.toLong())
             }
         }
 
         isSearching = false
     }
 
-    private fun deserialize(hits: List<ResponseSearch.Hit>) = hits.map {
+    private fun deserialize(hits: List<Hit>) = hits.map {
         val title =
-            it.highlightResult["post_title"]!!.jsonObject["value"]!!.jsonPrimitive.content
-        val excerpt = it.snippetResult["content"]!!.jsonObject["value"]!!.jsonPrimitive.content
-        val permalink = it.json["permalink"]!!.jsonPrimitive.content.replace("wp.", "")
+            (it.highlightResult?.get("post_title") as HighlightResultOption).value
+        val excerpt = (it.snippetResult?.get("content") as SnippetResultOption).value
+        val permalink = it.additionalProperties?.get("permalink")!!.jsonPrimitive.content.replace("wp.", "")
         val thumbnail = try {
-            it.json["images"]?.jsonObject?.get("thumbnail")?.jsonObject?.get("url")?.jsonPrimitive?.content
+            it.additionalProperties?.get("images")?.jsonObject?.get("thumbnail")?.jsonObject?.get("url")?.jsonPrimitive?.content
                 ?: ""
         } catch (error: Throwable) {
             ""
