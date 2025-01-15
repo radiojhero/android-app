@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
@@ -339,13 +338,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             return
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
-                NotificationChannel(
-                    "MediaPlayback", "MediaPlaybackService", NotificationManager.IMPORTANCE_LOW
-                )
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
+            NotificationChannel(
+                "MediaPlayback", "MediaPlaybackService", NotificationManager.IMPORTANCE_LOW
             )
-        }
+        )
 
         val playPauseIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(
             this, PlaybackStateCompat.ACTION_PLAY_PAUSE

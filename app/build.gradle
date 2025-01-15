@@ -8,12 +8,12 @@ plugins {
 def madeBy = "Made with love by Armando Meziat"
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.radiojhero.app"
-        minSdk 21
-        targetSdk 34
+        minSdk 26
+        targetSdk 35
         versionCode 14
         versionName "3.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

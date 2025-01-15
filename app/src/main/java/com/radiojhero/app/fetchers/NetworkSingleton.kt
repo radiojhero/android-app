@@ -4,7 +4,7 @@ import android.content.Context
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
-class NetworkSingleton constructor(context: Context) {
+class NetworkSingleton(context: Context) {
     companion object {
         @Volatile
         private var INSTANCE: NetworkSingleton? = null
