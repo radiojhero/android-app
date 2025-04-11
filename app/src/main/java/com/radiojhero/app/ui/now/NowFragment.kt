@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.TextView
 import androidx.core.view.MenuProvider
 import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
@@ -26,16 +27,15 @@ import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class NowFragment : Fragment() {
 
     private var binding: FragmentNowBinding? = null
 
     private var progressTimer: Timer? = null
-    private var lastUpdatedAt = 0.0
-    private var songProgress = 0.0
-    private var songDuration = 0.0
+    private var lastUpdatedAt = 0L
+    private var songProgress = 0L
+    private var songDuration = 0L
 
     private var programImageLoaded = false
     private val programImageListener = object : RequestListener<Drawable> {
@@ -124,7 +124,7 @@ class NowFragment : Fragment() {
         val inflated = FragmentNowBinding.inflate(inflater, container, false)
         inflated.apply {
             constraintLayout.loadSkeleton {
-                color(R.color.skeleton)
+                color(R.color.md_theme_surfaceDim)
                 shimmer(true)
             }
             programImageWrapper.apply {
@@ -210,7 +210,7 @@ class NowFragment : Fragment() {
     }
 
     private fun isMetadataEmpty() =
-        metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME, -1.0) == -1.0
+        metadata.getLong(MediaPlaybackService.LAST_UPDATED_TIME, -1L) == -1L
 
     private fun updateMetadata() {
         val binding = this.binding ?: return
@@ -237,7 +237,7 @@ class NowFragment : Fragment() {
                 .into(binding.djImage)
         }
 
-        lastUpdatedAt = metadata.getDouble(MediaPlaybackService.LAST_UPDATED_TIME)
+        lastUpdatedAt = metadata.getLong(MediaPlaybackService.LAST_UPDATED_TIME)
         maybeFinishUpdatingMetadata()
     }
 
@@ -270,6 +270,10 @@ class NowFragment : Fragment() {
 
         val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY) ?: emptyArray()
         for ((index, line) in songHistory.withIndex()) {
+            if (index + 1 >= binding.songHistoryWrapper.size) {
+                break
+            }
+
             (binding.songHistoryWrapper[index + 1] as TextView).apply {
                 visibility = View.VISIBLE
                 text = line
@@ -278,10 +282,11 @@ class NowFragment : Fragment() {
 
         binding.songLabel.text = metadata.getString(MediaPlaybackService.SONG_TITLE)
         binding.artistLabel.text = metadata.getString(MediaPlaybackService.SONG_ARTIST)
+        binding.albumLabel.text = metadata.getString(MediaPlaybackService.SONG_ALBUM)
 
-        songDuration = metadata.getDouble(MediaPlaybackService.SONG_DURATION)
+        songDuration = metadata.getLong(MediaPlaybackService.SONG_DURATION)
         songProgress =
-            metadata.getDouble(MediaPlaybackService.CURRENT_TIME) - metadata.getDouble(
+            metadata.getLong(MediaPlaybackService.CURRENT_TIME) - metadata.getLong(
                 MediaPlaybackService.SONG_START_TIME
             )
 
@@ -316,17 +321,17 @@ class NowFragment : Fragment() {
             return
         }
 
-        val duration = if (songDuration < 0) Double.POSITIVE_INFINITY else songDuration
+        val duration = songDuration
         val progress = min(duration, songProgress + getNow() - lastUpdatedAt)
         binding.timeLabel.text = formatTime(progress)
         binding.durationLabel.text =
-            if (duration.isInfinite()) getString(R.string.live) else formatTime(duration)
-        binding.nowProgress.max = duration.roundToInt()
-        binding.nowProgress.progress = progress.roundToInt()
+            if (duration < 0) getString(R.string.live) else formatTime(duration)
+        binding.nowProgress.max = duration.toInt()
+        binding.nowProgress.progress = progress.toInt()
     }
 
-    private fun formatTime(time: Double): String {
-        return DateUtils.formatElapsedTime(time.toLong())
+    private fun formatTime(time: Long): String {
+        return DateUtils.formatElapsedTime(time / 1000)
     }
 
     private var showSongHistory = false

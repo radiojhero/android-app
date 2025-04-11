@@ -32,7 +32,6 @@ class WebPageFragment : Fragment() {
     ): View {
         val inflated = FragmentWebpageBinding.inflate(inflater, container, false)
         binding = inflated
-        updatePaddingBottom()
         return inflated.root
     }
 
@@ -68,6 +67,7 @@ class WebPageFragment : Fragment() {
 
             override fun onPageFinished(webView: WebView, url: String) {
                 super.onPageFinished(webView, url)
+                updatePaddingBottom()
                 hasLoaded = true
             }
 

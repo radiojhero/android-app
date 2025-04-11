@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.fetchers.PostsFetcher
+import com.radiojhero.app.pmDocToHTML
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,11 +29,11 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
         private val dateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
 
         fun bind(post: PostsFetcher.Post, onClick: (post: PostsFetcher.Post) -> Unit) {
-            titleLabel.text = HtmlCompat.fromHtml(post.title, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            titleLabel.text = HtmlCompat.fromHtml(pmDocToHTML(post.title), HtmlCompat.FROM_HTML_MODE_LEGACY)
             subtitleLabel.text =
-                HtmlCompat.fromHtml(post.subtitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                HtmlCompat.fromHtml(pmDocToHTML(post.subtitle), HtmlCompat.FROM_HTML_MODE_LEGACY)
             categoryLabel.text = post.category
-            dateLabel.text = dateFormat.format(post.date)
+            dateLabel.text = dateFormat.format(post.date.toInstant().toEpochMilli())
             Glide.with(itemView).load(post.coverImage).into(imageView)
 
             itemView.setOnClickListener {

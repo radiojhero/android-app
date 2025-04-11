@@ -19,6 +19,7 @@ import com.radiojhero.app.databinding.ActivityMainBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import com.radiojhero.app.ui.settings.SettingsFragmentDirections
+import androidx.core.view.get
 
 class MainActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -61,6 +62,10 @@ class MainActivity : AppCompatActivity(),
         return state != PlaybackStateCompat.STATE_PLAYING && state != PlaybackStateCompat.STATE_BUFFERING
     }
 
+    fun switchFormat(format: String) {
+        MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(format, null)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,7 +82,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(binding.root)
 
         val navView = binding.navView
-        navView.menu.getItem(2).isEnabled = false
+        navView.menu[2].isEnabled = false
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
@@ -90,6 +95,7 @@ class MainActivity : AppCompatActivity(),
                 R.id.navigation_settings
             )
         )
+        setSupportActionBar(binding.topAppBar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 

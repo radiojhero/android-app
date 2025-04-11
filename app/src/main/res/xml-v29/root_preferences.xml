@@ -6,6 +6,15 @@
         app:title="@string/setting_about" />
 
     <ListPreference
+        app:defaultValue="mp3"
+        app:entries="@array/format_entries"
+        app:entryValues="@array/format_values"
+        app:icon="@drawable/ic_baseline_music_note_24"
+        app:key="format"
+        app:title="@string/setting_format"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
         app:defaultValue="system"
         app:entries="@array/appearance_entries"
         app:entryValues="@array/appearance_values"

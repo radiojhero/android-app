@@ -23,6 +23,7 @@ import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -32,8 +33,6 @@ import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.toDate
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToLong
-
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 
@@ -48,6 +47,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_DURATION = "com.radiojhero.app.SONG_DURATION"
         const val SONG_TITLE = "com.radiojhero.app.SONG_TITLE"
         const val SONG_ARTIST = "com.radiojhero.app.SONG_ARTIST"
+        const val SONG_ALBUM = "com.radiojhero.app.SONG_ALBUM"
         const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
@@ -87,6 +87,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 .build()
         )
     }
+
+    private lateinit var selectedMediaId: String
 
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
@@ -133,11 +135,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-            onPlay()
-        }
-
-        override fun onPlayFromSearch(query: String?, extras: Bundle?) {
-            onPlay()
+            selectedMediaId = mediaId ?: "mp3"
+            if (player.isPlaying) {
+                onPause()
+                onPlay()
+            }
         }
 
         override fun onPause() {
@@ -158,6 +160,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
+        selectedMediaId = PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
         fetcher.start {
@@ -211,8 +214,22 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             if (parentMediaId == ROOT) listOf(
                 MediaBrowserCompat.MediaItem(
                     MediaDescriptionCompat.Builder()
-                        .setTitle("MP3 96 kbps")
-                        .setMediaId("MP3 96 kbps")
+                        .setTitle("MP3 320 kbps")
+                        .setMediaId("mp3")
+                        .build(),
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                ),
+                MediaBrowserCompat.MediaItem(
+                    MediaDescriptionCompat.Builder()
+                        .setTitle("AAC 128 kbps")
+                        .setMediaId("aac")
+                        .build(),
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                ),
+                MediaBrowserCompat.MediaItem(
+                    MediaDescriptionCompat.Builder()
+                        .setTitle("Ogg Opus 32 kbps")
+                        .setMediaId("ogg")
                         .build(),
                     MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                 ),
@@ -220,13 +237,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         )
     }
 
-    private fun reinitPlayer(): String? {
+    private fun reinitPlayer(): String {
         try {
             player.reset()
-        } catch (_: Throwable) {
+        } catch (error: Throwable) {
+            println(error)
             // never mind exceptions
         }
-        val source = ConfigFetcher.getConfig("streamingUrl")
+        val source = ConfigFetcher.getConfig("streamingUrlTemplate") + selectedMediaId
         player.setDataSource(source)
         return source
     }
@@ -264,7 +282,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         val programCovers = program.getJSONArray("cover")
         val programImageSrc =
             programCovers.getJSONObject(programCovers.length() - 1).getString("src")
-        val songProgress = metadata.getDouble("current_time") - song.getDouble("start_time")
+        val songProgress = metadata.getLong("current_time") - song.getLong("start_time")
         val djs = program.getJSONArray("djs")
         val dj = if (djs.length() > 0) djs.getJSONObject(0) else null
 
@@ -274,8 +292,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             val songInstance = songHistory.getJSONObject(i)
             val title = songInstance.getString("title")
             val artist = songInstance.getString("artist")
-            val startTime = (songInstance.getDouble("start_time") * 1000).roundToLong().toDate()
-            formattedSongHistory.add("${dateFormat.format(startTime)} · $artist - $title")
+            val album = songInstance.getString("album")
+            val line = listOf(album, artist, title).filter { item -> item.isNotBlank() }.joinToString(" - ")
+
+            val startTime = (songInstance.getLong("start_time")).toDate()
+            formattedSongHistory.add("${dateFormat.format(startTime)} · $line")
         }
 
         bundle.apply {
@@ -286,12 +307,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(PROGRAM_GENRE, program.getString("genre"))
             putString(SONG_TITLE, song.getString("title"))
             putString(SONG_ARTIST, song.getString("artist"))
+            putString(SONG_ALBUM, song.getString("album"))
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
-            putDouble(CURRENT_TIME, metadata.getDouble("current_time"))
-            putDouble(SONG_START_TIME, song.getDouble("start_time"))
-            putDouble(SONG_DURATION, song.getDouble("duration"))
+            putLong(CURRENT_TIME, metadata.getLong("current_time"))
+            putLong(SONG_START_TIME, song.getLong("start_time"))
+            putLong(SONG_DURATION, song.getLong("duration"))
             putString(PROGRAM_DESCRIPTION, program.getString("description"))
-            putDouble(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
+            putLong(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
             putBoolean(IS_LIVE, metadata.getBoolean("is_live"))
             putBoolean(HAS_ERROR, false)
         }
@@ -301,7 +323,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getString("artist"))
             .putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
-                (song.getDouble("duration") * 1000).roundToLong()
+                (song.getLong("duration"))
             )
 
         if (this.programImageSrc != programImageSrc) {
@@ -323,7 +345,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setPlaybackState(
                 stateBuilder.setState(
                     playbackState,
-                    (songProgress * 1000).roundToLong(),
+                    songProgress,
                     1f,
                     SystemClock.elapsedRealtime()
                 ).build()
@@ -378,7 +400,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 .setDeleteIntent(stopIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_onesignal_large_icon_default)
-                .setColor(ContextCompat.getColor(this, R.color.jh_1))
+                .setColor(ContextCompat.getColor(this, R.color.md_theme_primary))
                 .addAction(action)
                 .setStyle(
                     androidx.media.app.NotificationCompat.MediaStyle()

@@ -7,6 +7,7 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="setting_about">Sobre a J-Hero</string>
+    <string name="setting_format">Formato de áudio</string>
     <string name="setting_appearance">Aparência</string>
     <string name="setting_notifications">Notificações</string>
     <string name="label_now">Agora na J-Hero</string>
@@ -38,6 +39,9 @@
     <string name="dj_and_genre">%1$s · %2$s</string>
     <string name="search">Buscar</string>
     <string name="post_cover_image">Imagem de capa do artigo</string>
+    <string name="format_mp3">MP3 320 kbps</string>
+    <string name="format_aac">AAC 128 kbps</string>
+    <string name="format_opus">Ogg Opus 32 kbps</string>
     <string name="appearance_system">Sistema</string>
     <string name="appearance_light">Tema claro</string>
     <string name="appearance_dark">Tema escuro</string>

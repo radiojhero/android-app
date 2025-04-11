@@ -1,0 +1,12 @@
+<resources>
+    <string-array name="format_entries">
+        <item>@string/format_mp3</item>
+        <item>@string/format_aac</item>
+        <item>@string/format_opus</item>
+    </string-array>
+    <string-array name="format_values">
+        <item>mp3</item>
+        <item>aac</item>
+        <item>ogg</item>
+    </string-array>
+</resources>

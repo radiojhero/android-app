@@ -5,16 +5,16 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
 import com.onesignal.OneSignal
-import com.radiojhero.app.BuildConfig
-import com.radiojhero.app.R
-import com.radiojhero.app.switchTheme
+import com.radiojhero.app.*
 import kotlinx.coroutines.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     private val listener: SharedPreferences.OnSharedPreferenceChangeListener =
         SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            println("Changing preference '$key'")
             when (key) {
+                "format" -> (activity as MainActivity).switchFormat(sharedPreferences.getString(key, "mp3") ?: "mp3")
                 "appearance" -> switchTheme(sharedPreferences.getString(key, "system") ?: "system")
                 "notification" -> setNotificationMode(
                     sharedPreferences.getString(key, "none") ?: "none"

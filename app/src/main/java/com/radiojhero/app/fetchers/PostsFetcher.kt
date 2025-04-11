@@ -5,8 +5,9 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.radiojhero.app.getNow
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
+import java.nio.charset.Charset
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class PostsFetcher {
 
@@ -16,29 +17,37 @@ class PostsFetcher {
         val category: String = "",
         val coverImage: String = "",
         val link: String = "",
-        val date: Date = Date(),
-        val random: Long = (getNow() * 1000).toLong(),
+        val date: OffsetDateTime = OffsetDateTime.now(),
+        val random: Long = getNow(),
     )
 
     companion object {
-        private const val query = """
-        query getPosts(${'$'}cursor: String!) {
-          posts(first: 60, after: ${'$'}cursor) {
-            edges {
-              cursor
-              node {
-                title(format: RENDERED)
-                subtitle
-                link
-                dateGmt
-                featuredImage {
-                  node {
-                    sourceUrl
+        private const val QUERY = """
+        query GetPosts(${'$'}offset: Int! = 0) {
+          posts(
+            where: { status: PUBLISHED, type: ARTICLE, deletedAt: null }
+            options: {
+              limit: 60
+              offset: ${'$'}offset
+              sort: [{ sticky: DESC }, { publishedAt: DESC }]
+            }
+          ) {
+            id
+            slug
+            revisionsConnection(where: { edge: { status: CURRENT } }) {
+              edges {
+                node {
+                  title
+                  lead
+                  sticky
+                  publishedAt
+                  cover {
+                    url
                   }
-                }
-                categories {
-                  nodes {
-                    name
+                  category {
+                    id
+                    title
+                    slug
                   }
                 }
               }
@@ -46,10 +55,9 @@ class PostsFetcher {
           }
         }
         """
-        private var cursor = ""
+        private var offset = 0
         private var isFetching = false
         private var currentRequest: JsonObjectRequest? = null
-        private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
 
         fun fetch(
             context: Context,
@@ -61,39 +69,41 @@ class PostsFetcher {
             }
 
             if (reset) {
-                cursor = ""
+                offset = 0
             }
 
             val url = ConfigFetcher.getConfig("postsUrl")
 
             val body = JSONObject(
                 mapOf(
-                    "query" to query,
-                    "operationName" to "getPosts",
-                    "variables" to mapOf("cursor" to cursor),
+                    "query" to QUERY,
+                    "operationName" to "GetPosts",
+                    "variables" to mapOf("offset" to offset),
                 )
             )
 
             currentRequest = JsonObjectRequest(Request.Method.POST, url, body, { response ->
                 try {
                     val data =
-                        response.getJSONObject("data").getJSONObject("posts").getJSONArray("edges")
+                        response.getJSONObject("data").getJSONArray("posts")
                     val posts = mutableListOf<Post>()
 
+                    offset += 1
                     for (index in 0 until data.length()) {
-                        val edge = data.getJSONObject(index)
-                        cursor = edge.getString("cursor")
-                        val node = edge.getJSONObject("node")
+                        val post = data.getJSONObject(index)
+                        val node = post.getJSONObject("revisionsConnection").getJSONArray("edges").getJSONObject(0).getJSONObject("node")
+
+                        val date = OffsetDateTime.parse(node.getString("publishedAt"))
+                        val link = "/${node.getJSONObject("category").getString("slug")}/${date.format(DateTimeFormatter.ofPattern("yyyy/MM"))}/${post.getString("slug")}"
+
                         posts.add(
                             Post(
                                 node.getString("title"),
-                                node.getString("subtitle"),
-                                node.getJSONObject("categories").getJSONArray("nodes")
-                                    .getJSONObject(0).getString("name"),
-                                node.getJSONObject("featuredImage").getJSONObject("node")
-                                    .getString("sourceUrl"),
-                                node.getString("link").replace("wp.", ""),
-                                dateFormatter.parse(node.getString("dateGmt")) ?: Date()
+                                node.getString("lead"),
+                                node.getJSONObject("category").getString("title"),
+                                node.getJSONObject("cover").getString("url"),
+                                link,
+                                date,
                             )
                         )
                     }
@@ -107,7 +117,7 @@ class PostsFetcher {
                     isFetching = false
                 }
             }, { error ->
-                println("Error while fetching posts: $error")
+                println("Error while fetching posts: $error ${error.networkResponse.data.toString(Charset.forName("utf-8"))}")
                 completionHandler(null)
                 isFetching = false
             })

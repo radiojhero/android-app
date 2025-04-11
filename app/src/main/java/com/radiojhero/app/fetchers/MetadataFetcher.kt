@@ -16,8 +16,8 @@ class MetadataFetcher {
     val currentData get() = mData
     val lastUpdatedAt get() = mLastUpdatedAt
     val error get() = mError
-    private val interval = 15.0
-    private var mLastUpdatedAt = 0.0
+    private val interval = 15000L
+    private var mLastUpdatedAt = 0L
     private var mIsRunning = false
     private var mData: JSONObject? = null
     private var mMetadataDelay: Timer? = null
@@ -70,13 +70,13 @@ class MetadataFetcher {
                 var delay = interval
                 try {
                     val song = data.getJSONArray("song_history").getJSONObject(0)
-                    val songDuration = song.getDouble("duration")
+                    val songDuration = song.getLong("duration")
                     if (songDuration >= 0) {
                         delay = max(
-                            0.0,
+                            0L,
                             min(
                                 delay,
-                                song.getDouble("start_time") + songDuration - data.getDouble(
+                                song.getLong("start_time") + songDuration - data.getLong(
                                     "current_time"
                                 )
                             )
@@ -97,10 +97,10 @@ class MetadataFetcher {
         mNetwork.requestQueue.add(mCurrentRequest)
     }
 
-    private fun setTimeout(delay: Double) {
+    private fun setTimeout(delay: Long) {
         mMetadataDelay?.cancel()
         mMetadataDelay = Timer().apply {
-            schedule((delay * 1000).toLong()) {
+            schedule(delay) {
                 fetch()
             }
         }

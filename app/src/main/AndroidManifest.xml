@@ -12,10 +12,10 @@
         android:appCategory="audio"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RadioJHero"
-        tools:targetApi="upside_down_cake">
+        android:theme="@style/AppTheme"
+        tools:targetApi="vanilla_ice_cream">
 
         <meta-data
             android:name="com.google.android.gms.car.application"

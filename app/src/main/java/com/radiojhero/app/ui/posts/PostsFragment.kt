@@ -29,7 +29,6 @@ import koleton.api.loadSkeleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.math.max
 
@@ -42,7 +41,7 @@ class PostsFragment : Fragment() {
     private lateinit var mSearchAdapter: PostSearchAdapter
     private lateinit var mSearchLayoutManager: LinearLayoutManager
     private lateinit var mClient: SearchClient
-    private val INDEX = "wp_searchable_posts"
+    private val INDEX = "site_pages"
     val viewModel: PostsViewModel by viewModels()
 
     private var search = ""
@@ -79,7 +78,7 @@ class PostsFragment : Fragment() {
 
                     if (it.isEmpty()) {
                         inflated.recyclerView.loadSkeleton(R.layout.post_item) {
-                            color(R.color.skeleton)
+                            color(R.color.md_theme_surfaceDim)
                             itemCount(60)
                         }
                         viewModel.fetch(true)
@@ -166,8 +165,9 @@ class PostsFragment : Fragment() {
         mLayoutManager = GridLayoutManager(requireActivity(), columns.toInt())
         binding.recyclerView.layoutManager = mLayoutManager
         mAdapter = PostsAdapter {
+            val link = "https://${ConfigFetcher.getConfig("host")}${it.link}"
             val action =
-                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(it.link)
+                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
             activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
         }
         mAdapter.stateRestorationPolicy =
@@ -204,8 +204,9 @@ class PostsFragment : Fragment() {
         mSearchLayoutManager = LinearLayoutManager(requireActivity())
         binding.searchRecyclerView.layoutManager = mSearchLayoutManager
         mSearchAdapter = PostSearchAdapter {
+            val link = "https://${ConfigFetcher.getConfig("host")}${it.link}"
             val action =
-                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(it.link)
+                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
             activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
         }
         mSearchAdapter.stateRestorationPolicy =
@@ -248,17 +249,17 @@ class PostsFragment : Fragment() {
             highlightPostTag = "</mark>",
             snippetEllipsisText = "…",
             attributesToRetrieve = arrayListOf(
-                "post_title",
-                "content",
-                "permalink",
-                "images",
+                "title",
+                "body",
+                "path",
+                "cover",
             ),
             attributesToHighlight = arrayListOf(
-                "post_title",
-                "content",
+                "title",
+                "body",
             ),
             attributesToSnippet = arrayListOf(
-                "content",
+                "body",
             ),
         )
 
@@ -286,11 +287,11 @@ class PostsFragment : Fragment() {
 
     private fun deserialize(hits: List<Hit>) = hits.map {
         val title =
-            (it.highlightResult?.get("post_title") as HighlightResultOption).value
-        val excerpt = (it.snippetResult?.get("content") as SnippetResultOption).value
-        val permalink = it.additionalProperties?.get("permalink")!!.jsonPrimitive.content.replace("wp.", "")
+            (it.highlightResult?.get("title") as HighlightResultOption).value
+        val excerpt = (it.snippetResult?.get("body") as SnippetResultOption).value
+        val permalink = it.additionalProperties?.get("path")!!.jsonPrimitive.content
         val thumbnail = try {
-            it.additionalProperties?.get("images")?.jsonObject?.get("thumbnail")?.jsonObject?.get("url")?.jsonPrimitive?.content
+            it.additionalProperties?.get("cover")?.jsonPrimitive?.content
                 ?: ""
         } catch (error: Throwable) {
             ""
