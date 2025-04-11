@@ -6,7 +6,7 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.radiojhero.app.getNow
 import org.json.JSONObject
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlin.math.max
 import kotlin.math.min

@@ -32,7 +32,7 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.toDate
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 

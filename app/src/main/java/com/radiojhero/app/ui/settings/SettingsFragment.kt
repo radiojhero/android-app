@@ -5,8 +5,11 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
 import com.onesignal.OneSignal
-import com.radiojhero.app.*
-import kotlinx.coroutines.*
+import com.radiojhero.app.BuildConfig
+import com.radiojhero.app.MainActivity
+import com.radiojhero.app.R
+import com.radiojhero.app.switchTheme
+import kotlinx.coroutines.launch
 
 class SettingsFragment : PreferenceFragmentCompat() {
 

@@ -14,7 +14,7 @@ import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.fetchers.PostsFetcher
 import com.radiojhero.app.pmDocToHTML
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {

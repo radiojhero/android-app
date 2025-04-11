@@ -3,7 +3,12 @@ package com.radiojhero.app.ui.posts
 import android.app.SearchManager
 import android.content.Context.SEARCH_SERVICE
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.text.trimmedLength
@@ -18,7 +23,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.algolia.client.api.SearchClient
-import com.algolia.client.model.search.*
+import com.algolia.client.model.search.HighlightResultOption
+import com.algolia.client.model.search.Hit
+import com.algolia.client.model.search.IgnorePlurals
+import com.algolia.client.model.search.SearchParamsObject
+import com.algolia.client.model.search.SnippetResultOption
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentPostsBinding
 import com.radiojhero.app.endEditing
