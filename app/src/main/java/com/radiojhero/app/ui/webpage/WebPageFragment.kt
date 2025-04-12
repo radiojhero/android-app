@@ -67,12 +67,10 @@ class WebPageFragment : Fragment() {
                 super.onPageStarted(webView, url, favicon)
                 binding?.webpageProgress?.visibility = View.GONE
                 binding?.webpageWebview?.visibility = View.VISIBLE
-                updatePaddingBottom()
             }
 
             override fun onPageFinished(webView: WebView, url: String) {
                 super.onPageFinished(webView, url)
-                updatePaddingBottom()
                 hasLoaded = true
             }
 
@@ -121,11 +119,5 @@ class WebPageFragment : Fragment() {
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
         return true
-    }
-
-    private fun updatePaddingBottom() {
-        val webView = binding?.webpageWebview ?: return
-        val paddingBottom = webView.paddingBottom / resources.displayMetrics.density
-        webView.loadUrl("javascript:document.documentElement.style.setProperty('--android-extra-bottom-padding', '${paddingBottom}px')")
     }
 }
