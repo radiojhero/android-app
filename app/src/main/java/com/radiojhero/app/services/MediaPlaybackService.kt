@@ -5,9 +5,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.media.AudioAttributes
 import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
@@ -23,6 +21,11 @@ import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -79,15 +82,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private var programImageSrc = ""
 
-    private val player = MediaPlayer().apply {
-        setAudioAttributes(
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        )
-    }
-
+    private lateinit var player: ExoPlayer
     private lateinit var selectedMediaId: String
 
     private val callback = object : MediaSessionCompat.Callback() {
@@ -113,22 +108,19 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
             player.apply {
                 val source = reinitPlayer()
-                prepareAsync()
-                playbackState = PlaybackStateCompat.STATE_BUFFERING
-                setOnPreparedListener {
-                    println("Requesting audio focus...")
-                    val result = AudioManagerCompat.requestAudioFocus(audioManager, audioFocus)
+                prepare()
 
-                    if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                        println("Failed to get audio focus.")
-                        return@setOnPreparedListener
-                    }
+                println("Requesting audio focus...")
+                val result = AudioManagerCompat.requestAudioFocus(audioManager, audioFocus)
 
-                    println("Playing at $source")
-                    it.start()
-                    playbackState = PlaybackStateCompat.STATE_PLAYING
-                    updateMetadata()
+                if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    println("Failed to get audio focus.")
+                    return@apply
                 }
+
+                println("Playing at $source")
+                play()
+                updateMetadata()
             }
 
             updateMetadata()
@@ -160,7 +152,28 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
-        selectedMediaId = PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
+        player = ExoPlayer.Builder(this).apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                    .build(),
+                false
+            )
+        }.build()
+        player.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                this@MediaPlaybackService.playbackState = when (playbackState) {
+                    Player.STATE_IDLE -> PlaybackStateCompat.STATE_STOPPED
+                    Player.STATE_BUFFERING -> PlaybackStateCompat.STATE_BUFFERING
+                    Player.STATE_READY -> PlaybackStateCompat.STATE_PLAYING
+                    else -> return
+                }
+                updateMetadata()
+            }
+        })
+        selectedMediaId =
+            PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
 
         fetcher.start {
@@ -172,8 +185,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 PlaybackStateCompat.ACTION_PLAY or
                         PlaybackStateCompat.ACTION_STOP or
                         PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
-                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
+                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
             )
 
         mediaSession = MediaSessionCompat(baseContext, "MediaPlaybackService").apply {
@@ -188,7 +200,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     override fun onDestroy() {
         super.onDestroy()
-        player.reset()
+        player.release()
         fetcher.stop()
         mediaSession.run {
             isActive = false
@@ -239,13 +251,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private fun reinitPlayer(): String {
         try {
-            player.reset()
+            player.stop()
         } catch (error: Throwable) {
             println(error)
             // never mind exceptions
         }
         val source = ConfigFetcher.getConfig("streamingUrlTemplate") + selectedMediaId
-        player.setDataSource(source)
+        player.setMediaItem(MediaItem.fromUri(source), true)
         return source
     }
 
@@ -293,7 +305,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             val title = songInstance.getString("title")
             val artist = songInstance.getString("artist")
             val album = songInstance.getString("album")
-            val line = listOf(album, artist, title).filter { item -> item.isNotBlank() }.joinToString(" - ")
+            val line = listOf(album, artist, title).filter { item -> item.isNotBlank() }
+                .joinToString(" - ")
 
             val startTime = (songInstance.getLong("start_time")).toDate()
             formattedSongHistory.add("${dateFormat.format(startTime)} · $line")
@@ -321,6 +334,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         metadataBuilder
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getString("title"))
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getString("artist"))
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, song.getString("album"))
             .putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
                 (song.getLong("duration"))
