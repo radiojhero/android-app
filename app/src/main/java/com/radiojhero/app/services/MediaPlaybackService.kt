@@ -36,6 +36,7 @@ import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.toDate
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.core.content.edit
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 
@@ -256,6 +257,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             println(error)
             // never mind exceptions
         }
+
+        PreferenceManager.getDefaultSharedPreferences(this@MediaPlaybackService).edit {
+            putString("format", selectedMediaId)
+        }
+
         val source = ConfigFetcher.getConfig("streamingUrlTemplate") + selectedMediaId
         player.setMediaItem(MediaItem.fromUri(source), true)
         return source
