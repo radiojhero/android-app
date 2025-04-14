@@ -22,7 +22,7 @@
             android:resource="@xml/automotive_app_desc" />
         <meta-data
             android:name="androidx.car.app.TintableAttributionIcon"
-            android:resource="@drawable/ic_stat_onesignal_default" />
+            android:resource="@mipmap/ic_launcher_monochrome" />
         <meta-data
             android:name="io.sentry.auto-init"
             android:value="false" />
