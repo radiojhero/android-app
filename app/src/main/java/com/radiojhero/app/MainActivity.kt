@@ -7,7 +7,11 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -19,7 +23,6 @@ import com.radiojhero.app.databinding.ActivityMainBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import com.radiojhero.app.ui.settings.SettingsFragmentDirections
-import androidx.core.view.get
 
 class MainActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -66,8 +69,24 @@ class MainActivity : AppCompatActivity(),
         MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(format, null)
     }
 
+    private var insetsApplied = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v: View, insets: WindowInsetsCompat ->
+            if (!insetsApplied) {
+                insetsApplied = true
+                val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(
+                    v.paddingLeft,
+                    v.paddingTop,
+                    v.paddingRight,
+                    v.paddingBottom - systemInsets.bottom
+                ) // subtract the insets from the bottom padding
+            }
+            insets
+        }
 
         mediaBrowser = MediaBrowserCompat(
             this,
