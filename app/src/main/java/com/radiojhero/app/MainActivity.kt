@@ -69,22 +69,30 @@ class MainActivity : AppCompatActivity(),
         MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(format, null)
     }
 
-    private var insetsApplied = false
+    private var originalPaddingBottom: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v: View, insets: WindowInsetsCompat ->
-            if (!insetsApplied) {
-                insetsApplied = true
-                val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(
-                    v.paddingLeft,
-                    v.paddingTop,
-                    v.paddingRight,
-                    v.paddingBottom - systemInsets.bottom
-                ) // subtract the insets from the bottom padding
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view: View, insets: WindowInsetsCompat ->
+            if (originalPaddingBottom == null) {
+                originalPaddingBottom = view.paddingBottom
             }
+
+            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                originalPaddingBottom!! - if (imeInsets.bottom > 0) 0 else systemInsets.bottom
+            )
+
+            val params = binding.navView.layoutParams
+            params.height = if (imeInsets.bottom > 0) 0 else -1
+            binding.navView.layoutParams = params
+
             insets
         }
 
@@ -123,14 +131,6 @@ class MainActivity : AppCompatActivity(),
             setDisplayShowHomeEnabled(true)
             setDisplayUseLogoEnabled(true)
             setLogo(R.mipmap.ic_logojhero)
-        }
-
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
-            val original = resources.displayMetrics.heightPixels
-            val heightDiff = original - binding.root.height
-            val visibility = if (heightDiff > 500) View.GONE else View.VISIBLE
-            binding.bottomAppBar.visibility = visibility
-            binding.fab.visibility = visibility
         }
     }
 

@@ -17,6 +17,7 @@
     <string name="action_share">Compartilhar</string>
     <string name="title_webpage">Página</string>
     <string name="label_interact">Interaja com o DJ enviando-lhe um pedido musical e/ou um recado.</string>
+    <string name="label_interact_playlist">Faça um pedido musical dentro da temática da playlist.</string>
     <string name="label_interact_name">Nome</string>
     <string name="label_interact_song">Música pedida</string>
     <string name="label_interact_message">Mensagem</string>
@@ -25,13 +26,13 @@
     <string name="value_too_short">O valor é curto demais.</string>
     <string name="required_song_field">Preencha pelo menos este campo ou o seguinte.</string>
     <string name="required_message_field">Preencha pelo menos este campo ou o anterior.</string>
-    <string name="interact_unavailable">Indisponível</string>
-    <string name="interact_dj">Não há nenhum DJ fazendo transmissão ao vivo no momento para interagir com você na programação. Aguarde até que uma nova transmissão seja iniciada.</string>
+    <string name="interact_unavailable">Não é possível fazer pedidos a um podcast.</string>
     <string name="button_dismiss">OK</string>
     <string name="error">Erro</string>
     <string name="error_long">Ocorreu um erro desconhecido…</string>
     <string name="success">Sucesso</string>
     <string name="interact_success">Pedido enviado com sucesso. Cabe exclusivamente ao DJ no ar atendê-lo ou não.</string>
+    <string name="interact_success_playlist">Pedido enviado com sucesso! Aguarde um pouco.</string>
     <string name="dj_image_description">Avatar do DJ</string>
     <string name="program_image_description">Capa do programa</string>
     <string name="playlist">Playlist</string>
@@ -51,4 +52,5 @@
     <string name="label_now_error">Mil desculpas, houve algum problema na hora de exibir o que está rolando agora na programação da J-Hero. Com sorte, é um problema temporário, e logo, logo as coisas vão se normalizar.</string>
     <string name="onesignal_notification_accent_color" tools:ignore="Typos">FF1D8AA8</string>
     <string name="posts_error">Não foi possível obter a lista de artigos. Tente novamente mais tarde.</string>
+    <string name="song_cover_image">Arte de capa da música</string>
 </resources>

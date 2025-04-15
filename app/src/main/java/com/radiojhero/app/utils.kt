@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
+import java.text.Normalizer
 import java.util.Calendar
 import java.util.Date
 
@@ -147,4 +148,11 @@ fun pmDocToHTML(doc: String): String = buildString {
 
         append(text)
     }
+}
+
+val REGEX_UNACCENT = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+
+fun CharSequence.normalize(): String {
+    val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
+    return REGEX_UNACCENT.replace(temp, "").lowercase()
 }

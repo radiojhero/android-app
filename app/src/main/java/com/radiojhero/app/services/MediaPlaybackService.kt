@@ -55,8 +55,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
-        const val IS_LIVE = "com.radiojhero.app.IS_LIVE"
+        const val PROGRAM_TYPE = "com.radiojhero.app.PROGRAM_TYPE"
         const val HAS_ERROR = "com.radiojhero.app.HAS_ERROR"
+
+        const val PROGRAM_TYPE_LIVE = 1
+        const val PROGRAM_TYPE_PODCAST = 2
+        const val PROGRAM_TYPE_PLAYLIST = 3
     }
 
     private val ROOT = "@root@"
@@ -333,7 +337,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putLong(SONG_DURATION, song.getLong("duration"))
             putString(PROGRAM_DESCRIPTION, program.getString("description"))
             putLong(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
-            putBoolean(IS_LIVE, metadata.getBoolean("is_live"))
+            putInt(PROGRAM_TYPE, when (program.getString("type")) {
+                "live" -> PROGRAM_TYPE_LIVE
+                "podcast" -> PROGRAM_TYPE_PODCAST
+                "playlist" -> PROGRAM_TYPE_PLAYLIST
+                else -> PROGRAM_TYPE_PLAYLIST
+            })
             putBoolean(HAS_ERROR, false)
         }
 
