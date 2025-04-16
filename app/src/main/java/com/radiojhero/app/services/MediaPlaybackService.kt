@@ -334,7 +334,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putLong(CURRENT_TIME, metadata.getLong("current_time"))
             putLong(SONG_START_TIME, song.getLong("start_time"))
-            putLong(SONG_DURATION, song.getLong("duration"))
+            putLong(SONG_DURATION, song.optLong("duration", -1L))
             putString(PROGRAM_DESCRIPTION, program.getString("description"))
             putLong(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
             putInt(PROGRAM_TYPE, when (program.getString("type")) {
@@ -352,7 +352,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, song.getString("album"))
             .putLong(
                 MediaMetadataCompat.METADATA_KEY_DURATION,
-                (song.getLong("duration"))
+                (song.optLong("duration", -1L))
             )
 
         if (this.programImageSrc != programImageSrc) {
