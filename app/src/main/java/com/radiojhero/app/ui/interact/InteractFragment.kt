@@ -192,6 +192,7 @@ class InteractFragment : Fragment() {
                     editSong.text = null
                     editSongAutocomplete.text = null
                     editMessage.text = null
+                    selectedFile = ""
                 }
             } else {
                 alert(
