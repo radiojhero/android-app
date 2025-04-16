@@ -9,6 +9,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import com.bumptech.glide.Glide
 import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.fetchers.SongsFetcher.Song
@@ -36,6 +37,7 @@ class SongsAdapter(context: Context, @LayoutRes private val layoutResource: Int,
             clipToOutline = true
             outlineProvider = RoundedOutlineProvider(5f)
         }
+        Glide.with(view).load(song.cover).into(view.findViewById(R.id.image_view))
 
         return view
     }
