@@ -322,9 +322,21 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             formattedSongHistory.add("${dateFormat.format(startTime)} · $line")
         }
 
+        var djImageSrc = "about:blank"
+        if (dj != null) {
+            val avatars = dj.getJSONArray("avatar")
+            for (i in 0 until avatars.length()) {
+                val avatar = avatars.getJSONObject(i)
+                if (avatar.getString("sizes") == "any") {
+                    djImageSrc = avatar.getString("src")
+                    break
+                }
+            }
+        }
+
         bundle.apply {
             putString(PROGRAM_IMAGE, programImageSrc)
-            putString(DJ_IMAGE, dj?.getString("avatar"))
+            putString(DJ_IMAGE, djImageSrc)
             putString(PROGRAM_NAME, program.getString("name"))
             putString(DJ_NAME, dj?.getString("name"))
             putString(PROGRAM_GENRE, program.getString("genre"))
