@@ -59,14 +59,14 @@ class SongsFetcher {
                     println("Songs fetched and parsed.")
                     completionHandler(songs)
                 } catch (error: Throwable) {
-                    println("Error while fetching posts: $error")
+                    println("Error while fetching songs: $error")
                     completionHandler(null)
                 } finally {
                     isFetching = false
                 }
             }, { error ->
-                println("Error while fetching posts: $error ${error.networkResponse.data.toString(
-                    Charset.forName("utf-8"))}")
+                println("Error while fetching songs: $error ${error.networkResponse?.data?.toString(
+                    Charset.forName("utf-8")) ?: "unknown"}")
                 completionHandler(null)
                 isFetching = false
             })
