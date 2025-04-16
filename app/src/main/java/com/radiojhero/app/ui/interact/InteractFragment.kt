@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.core.text.HtmlCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.android.volley.toolbox.StringRequest
@@ -182,7 +181,7 @@ class InteractFragment : Fragment() {
                 progressIndicator.visibility = View.INVISIBLE
             }
 
-            if (if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) responseString== "true" else responseString.isBlank()) {
+            if (if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) responseString == "true" else responseString.isBlank()) {
                 alert(
                     R.string.success,
                     if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) R.string.interact_success else R.string.interact_success_playlist
@@ -195,11 +194,7 @@ class InteractFragment : Fragment() {
                     selectedFile = ""
                 }
             } else {
-                alert(
-                    R.string.error,
-                    HtmlCompat.fromHtml(responseString, HtmlCompat.FROM_HTML_MODE_COMPACT)
-                        .toString()
-                )
+                alert(R.string.error, responseString)
             }
         }, { error ->
             println(error)
