@@ -15,7 +15,11 @@ import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.fetchers.SongsFetcher.Song
 import com.radiojhero.app.normalize
 
-class SongsAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val allSongs: List<Song>):
+class SongsAdapter(
+    context: Context,
+    @LayoutRes private val layoutResource: Int,
+    private val allSongs: List<Song>
+) :
     ArrayAdapter<Song>(context, layoutResource, allSongs), Filterable {
     private var mSongs: List<Song> = allSongs
 
@@ -28,11 +32,21 @@ class SongsAdapter(context: Context, @LayoutRes private val layoutResource: Int,
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(layoutResource, parent, false)
+        val view =
+            convertView ?: LayoutInflater.from(context).inflate(layoutResource, parent, false)
         val song = mSongs[position]
-        view.findViewById<TextView>(R.id.album_label).text = song.album
-        view.findViewById<TextView>(R.id.artist_label).text = song.artist
-        view.findViewById<TextView>(R.id.title_label).text = song.title
+        view.findViewById<TextView>(R.id.album_label).apply {
+            text = song.album
+            visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+        }
+        view.findViewById<TextView>(R.id.artist_label).apply {
+            text = song.artist
+            visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+        }
+        view.findViewById<TextView>(R.id.title_label).apply {
+            text = song.title
+            visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+        }
         view.findViewById<View>(R.id.image_wrapper).apply {
             clipToOutline = true
             outlineProvider = RoundedOutlineProvider(5f)
