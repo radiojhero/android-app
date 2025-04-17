@@ -100,7 +100,7 @@ class InteractFragment : Fragment() {
                 }
             SongsFetcher.fetch(requireActivity()) {
                 songList = it ?: listOf()
-                SongsAdapter(requireActivity(), R.layout.song_item, songList).apply {
+                SongsAdapter(activity ?: return@fetch, R.layout.song_item, songList).apply {
                     editSongAutocomplete.setAdapter(this)
                 }
             }
