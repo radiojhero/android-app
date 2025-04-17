@@ -22,17 +22,17 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.radiojhero.app.collapse
-import com.radiojhero.app.expand
-import com.radiojhero.app.getNow
 import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
+import com.radiojhero.app.collapse
 import com.radiojhero.app.databinding.FragmentNowBinding
+import com.radiojhero.app.expand
 import com.radiojhero.app.fetchers.ConfigFetcher
+import com.radiojhero.app.getNow
 import com.radiojhero.app.services.MediaPlaybackService
 import koleton.api.hideSkeleton
 import koleton.api.loadSkeleton
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
 
@@ -238,7 +238,7 @@ class NowFragment : Fragment() {
             .into(binding.programImage)
 
         val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
-        if (djImageSrc == null) {
+        if (djImageSrc.isNullOrBlank() || djImageSrc == "about:blank") {
             djImageLoaded = true
         } else {
             Glide.with(this).load(djImageSrc).addListener(djImageListener)
@@ -259,7 +259,8 @@ class NowFragment : Fragment() {
         binding.constraintLayout.hideSkeleton()
 
         val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
-        binding.djImage.visibility = if (djImageSrc == null) View.GONE else View.VISIBLE
+        binding.djImage.visibility =
+            if (djImageSrc.isNullOrBlank() || djImageSrc == "about:blank") View.GONE else View.VISIBLE
 
         binding.programLabel.text = metadata.getString(MediaPlaybackService.PROGRAM_NAME)
         binding.descriptionLabel.text =
