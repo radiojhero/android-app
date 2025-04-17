@@ -18,9 +18,9 @@
     <string name="title_webpage">Página</string>
     <string name="label_interact">Interaja com o DJ enviando-lhe um pedido musical e/ou um recado.</string>
     <string name="label_interact_playlist">Faça um pedido musical dentro da temática da playlist.</string>
-    <string name="label_interact_name">Nome</string>
+    <string name="label_interact_name">Seu nome</string>
     <string name="label_interact_song">Música pedida</string>
-    <string name="label_interact_message">Mensagem</string>
+    <string name="label_interact_message">Sua mensagem</string>
     <string name="interact_send">Enviar</string>
     <string name="required_field">Preencha este campo.</string>
     <string name="value_too_short">O valor é curto demais.</string>
