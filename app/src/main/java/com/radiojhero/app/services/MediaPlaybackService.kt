@@ -16,6 +16,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
@@ -35,8 +36,7 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.MetadataFetcher
 import com.radiojhero.app.toDate
 import java.text.SimpleDateFormat
-import java.util.Locale
-import androidx.core.content.edit
+import java.util.*
 
 class MediaPlaybackService : MediaBrowserServiceCompat() {
 
@@ -52,6 +52,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_TITLE = "com.radiojhero.app.SONG_TITLE"
         const val SONG_ARTIST = "com.radiojhero.app.SONG_ARTIST"
         const val SONG_ALBUM = "com.radiojhero.app.SONG_ALBUM"
+        const val SONG_IMAGE = "com.radiojhero.app.SONG_IMAGE"
         const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
@@ -85,7 +86,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val bundle = Bundle()
 
-    private var programImageSrc = ""
+    private var songImageSrc = ""
 
     private lateinit var player: ExoPlayer
     private lateinit var selectedMediaId: String
@@ -334,6 +335,18 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
 
+        var songImageSrc = "about:blank"
+        val covers = song.optJSONArray("cover")
+        if (covers != null) {
+            for (i in 0 until covers.length()) {
+                val avatar = covers.getJSONObject(i)
+                if (avatar.getString("sizes") == "any") {
+                    songImageSrc = avatar.getString("src")
+                    break
+                }
+            }
+        }
+
         bundle.apply {
             putString(PROGRAM_IMAGE, programImageSrc)
             putString(DJ_IMAGE, djImageSrc)
@@ -343,18 +356,21 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(SONG_TITLE, song.getString("title"))
             putString(SONG_ARTIST, song.getString("artist"))
             putString(SONG_ALBUM, song.getString("album"))
+            putString(SONG_IMAGE, songImageSrc)
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putLong(CURRENT_TIME, metadata.getLong("current_time"))
             putLong(SONG_START_TIME, song.getLong("start_time"))
             putLong(SONG_DURATION, song.optLong("duration", -1L))
             putString(PROGRAM_DESCRIPTION, program.getString("description"))
             putLong(LAST_UPDATED_TIME, fetcher.lastUpdatedAt)
-            putInt(PROGRAM_TYPE, when (program.getString("type")) {
-                "live" -> PROGRAM_TYPE_LIVE
-                "podcast" -> PROGRAM_TYPE_PODCAST
-                "playlist" -> PROGRAM_TYPE_PLAYLIST
-                else -> PROGRAM_TYPE_PLAYLIST
-            })
+            putInt(
+                PROGRAM_TYPE, when (program.getString("type")) {
+                    "live" -> PROGRAM_TYPE_LIVE
+                    "podcast" -> PROGRAM_TYPE_PODCAST
+                    "playlist" -> PROGRAM_TYPE_PLAYLIST
+                    else -> PROGRAM_TYPE_PLAYLIST
+                }
+            )
             putBoolean(HAS_ERROR, false)
         }
 
@@ -367,11 +383,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 (song.optLong("duration", -1L))
             )
 
-        if (this.programImageSrc != programImageSrc) {
-            Glide.with(this).asBitmap().load(programImageSrc).into(object : CustomTarget<Bitmap>() {
+        if (this.songImageSrc != songImageSrc) {
+            Glide.with(this).asBitmap().load(songImageSrc).into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    this@MediaPlaybackService.programImageSrc = programImageSrc
-                    println("image loaded: $programImageSrc")
+                    this@MediaPlaybackService.songImageSrc = songImageSrc
+                    println("image loaded: $songImageSrc")
                     metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource)
                 }
 

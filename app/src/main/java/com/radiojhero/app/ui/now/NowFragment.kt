@@ -109,6 +109,37 @@ class NowFragment : Fragment() {
         }
     }
 
+    private var songImageLoaded = false
+    private val songImageListener = object : RequestListener<Drawable> {
+        override fun onLoadFailed(
+            e: GlideException?,
+            model: Any?,
+            target: Target<Drawable>,
+            isFirstResource: Boolean
+        ): Boolean {
+            if (songImageLoaded) {
+                return false
+            }
+            songImageLoaded = true
+            maybeFinishUpdatingMetadata()
+            return false
+        }
+
+        override fun onResourceReady(
+            resource: Drawable,
+            model: Any,
+            target: Target<Drawable>,
+            dataSource: DataSource,
+            isFirstResource: Boolean
+        ): Boolean {
+            if (songImageLoaded) {
+                return false
+            }
+            songImageLoaded = true
+            maybeFinishUpdatingMetadata()
+            return false
+        }
+    }
     private lateinit var mediaController: MediaControllerCompat
     private var metadata: Bundle = Bundle()
 
@@ -142,6 +173,10 @@ class NowFragment : Fragment() {
             djImage.apply {
                 clipToOutline = true
                 outlineProvider = RoundedOutlineProvider(25f)
+            }
+            songImageWrapper.apply {
+                clipToOutline = true
+                outlineProvider = RoundedOutlineProvider(5f)
             }
         }
 
@@ -245,6 +280,10 @@ class NowFragment : Fragment() {
                 .into(binding.djImage)
         }
 
+        Glide.with(this).load(metadata.getString(MediaPlaybackService.SONG_IMAGE))
+            .addListener(songImageListener)
+            .into(binding.songImageView)
+
         lastUpdatedAt = metadata.getLong(MediaPlaybackService.LAST_UPDATED_TIME)
         maybeFinishUpdatingMetadata()
     }
@@ -252,7 +291,7 @@ class NowFragment : Fragment() {
     private fun maybeFinishUpdatingMetadata() {
         val binding = this.binding ?: return
 
-        if (!programImageLoaded || !djImageLoaded || isMetadataEmpty()) {
+        if (!programImageLoaded || !djImageLoaded || !songImageLoaded || isMetadataEmpty()) {
             return
         }
 
@@ -289,9 +328,27 @@ class NowFragment : Fragment() {
             }
         }
 
-        binding.songLabel.text = metadata.getString(MediaPlaybackService.SONG_TITLE)
-        binding.artistLabel.text = metadata.getString(MediaPlaybackService.SONG_ARTIST)
-        binding.albumLabel.text = metadata.getString(MediaPlaybackService.SONG_ALBUM)
+        binding.songLabel.apply {
+            val content = metadata.getString(MediaPlaybackService.SONG_TITLE)
+            if (content != text) {
+                text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
+        binding.artistLabel.apply {
+            val content = metadata.getString(MediaPlaybackService.SONG_ARTIST)
+            if (content != text) {
+                text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
+        binding.albumLabel.apply {
+            val content = metadata.getString(MediaPlaybackService.SONG_ALBUM)
+            if (content != text) {
+                text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
 
         songDuration = metadata.getLong(MediaPlaybackService.SONG_DURATION)
         songProgress =
