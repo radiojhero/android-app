@@ -36,6 +36,7 @@ import koleton.api.loadSkeleton
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
+import kotlin.math.min
 
 class NowFragment : Fragment() {
 
@@ -401,7 +402,12 @@ class NowFragment : Fragment() {
         }
 
         val duration = songDuration
-        val progress = songProgress + getNow() - lastUpdatedAt
+        var progress = songProgress + getNow() - lastUpdatedAt
+
+        if (duration >= 0) {
+            progress = min(duration, progress)
+        }
+
         binding.timeLabel.text = formatTime(progress)
         binding.durationLabel.text =
             if (duration < 0) getString(R.string.live) else formatTime(duration)
