@@ -1,6 +1,7 @@
 package com.radiojhero.app.fetchers
 
 import android.content.Context
+import androidx.core.net.toUri
 import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
@@ -16,6 +17,7 @@ class MetadataFetcher {
     val currentData get() = mData
     val lastUpdatedAt get() = mLastUpdatedAt
     val error get() = mError
+    var offset = 0L
     private val interval = 15000L
     private var mLastUpdatedAt = 0L
     private var mIsRunning = false
@@ -55,11 +57,17 @@ class MetadataFetcher {
         println("Metadata fetcher stopped.")
     }
 
+    fun forceFetch() {
+        fetch()
+    }
+
     private fun fetch() {
-        println("Fetching metadata...")
-        val url = ConfigFetcher.getConfig("metadataUrl") ?: ""
+        val url = (ConfigFetcher.getConfig("metadataUrl") ?: "about:blank").toUri()
+            .buildUpon().appendQueryParameter("offset", offset.toString()).build()
+        println("Fetching metadata... $url")
+
         mCurrentRequest = JsonObjectRequest(
-            Request.Method.GET, url, null,
+            Request.Method.GET, url.toString(), null,
             { data ->
                 mError = null
                 mData = data
@@ -70,7 +78,7 @@ class MetadataFetcher {
                 var delay = interval
                 try {
                     val song = data.getJSONArray("song_history").getJSONObject(0)
-                    val songDuration = song.getLong("duration")
+                    val songDuration = song.optLong("duration", -1L)
                     if (songDuration >= 0) {
                         delay = max(
                             0L,

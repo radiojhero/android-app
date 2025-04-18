@@ -92,6 +92,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private lateinit var player: ExoPlayer
     private lateinit var selectedMediaId: String
 
+    private fun setMetadataOffset() {
+        val format = PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
+        fetcher.offset = if (format == "ogg") 16384L else 8192L
+        fetcher.forceFetch()
+    }
+
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
             if (player.isPlaying) {
@@ -135,10 +141,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
             selectedMediaId = mediaId ?: "mp3"
+            setMetadataOffset()
             if (player.isPlaying) {
                 onPause()
                 onPlay()
+                return
             }
+
+            updateMetadata()
         }
 
         override fun onPause() {
@@ -158,6 +168,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+        setMetadataOffset()
 
         player = ExoPlayer.Builder(this).apply {
             setAudioAttributes(
