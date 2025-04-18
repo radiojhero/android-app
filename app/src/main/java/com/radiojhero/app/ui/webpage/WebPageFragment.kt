@@ -96,7 +96,8 @@ class WebPageFragment : Fragment() {
         }
 
         webView.settings.javaScriptEnabled = true
-        webView.settings.userAgentString = "Mozilla/5.0 RadioJHero/1.0 (Android)"
+        webView.settings.userAgentString =
+            "Mozilla/5.0 RadioJHero/${getString(R.string.version_name)} (Android)"
 
         webView.loadUrl(args.url)
     }
