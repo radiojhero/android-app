@@ -315,7 +315,6 @@
                         android:id="@+id/album_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:alpha="0.6"
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal"
                         android:focusable="true"
@@ -326,6 +325,22 @@
                         android:text="Song Album Placeholder"
                         android:textSize="13sp"
                         android:textStyle="italic"
+                        tools:ignore="HardcodedText" />
+
+                    <com.radiojhero.app.ui.MarqueeTextView
+                        android:id="@+id/requester_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.6"
+                        android:ellipsize="marquee"
+                        android:fadingEdge="horizontal"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:textSize="11sp"
+                        android:visibility="gone"
                         tools:ignore="HardcodedText" />
 
                 </com.google.android.flexbox.FlexboxLayout>

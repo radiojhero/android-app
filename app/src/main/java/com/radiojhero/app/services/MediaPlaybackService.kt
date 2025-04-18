@@ -52,6 +52,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_TITLE = "com.radiojhero.app.SONG_TITLE"
         const val SONG_ARTIST = "com.radiojhero.app.SONG_ARTIST"
         const val SONG_ALBUM = "com.radiojhero.app.SONG_ALBUM"
+        const val SONG_REQUESTER = "com.radiojhero.app.SONG_REQUESTER"
         const val SONG_IMAGE = "com.radiojhero.app.SONG_IMAGE"
         const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
@@ -356,6 +357,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(SONG_TITLE, song.getString("title"))
             putString(SONG_ARTIST, song.getString("artist"))
             putString(SONG_ALBUM, song.getString("album"))
+            putString(SONG_REQUESTER, song.optString("album", ""))
             putString(SONG_IMAGE, songImageSrc)
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putLong(CURRENT_TIME, metadata.getLong("current_time"))

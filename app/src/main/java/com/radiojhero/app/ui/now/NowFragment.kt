@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.get
 import androidx.core.view.size
@@ -346,6 +347,18 @@ class NowFragment : Fragment() {
             val content = metadata.getString(MediaPlaybackService.SONG_ALBUM)
             if (content != text) {
                 text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
+        binding.requesterLabel.apply {
+            var content = metadata.getString(MediaPlaybackService.SONG_REQUESTER, "")
+
+            if (content.isNotBlank()) {
+                content = getString(R.string.requester_string, content)
+            }
+
+            if (content != text) {
+                text = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 visibility = if (text.isBlank()) View.GONE else View.VISIBLE
             }
         }
