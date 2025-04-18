@@ -357,7 +357,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(SONG_TITLE, song.getString("title"))
             putString(SONG_ARTIST, song.getString("artist"))
             putString(SONG_ALBUM, song.getString("album"))
-            putString(SONG_REQUESTER, song.optString("album", ""))
+            putString(SONG_REQUESTER, song.optString("requested_by", ""))
             putString(SONG_IMAGE, songImageSrc)
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putLong(CURRENT_TIME, metadata.getLong("current_time"))
