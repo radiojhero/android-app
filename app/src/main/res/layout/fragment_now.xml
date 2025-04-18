@@ -259,20 +259,20 @@
 
                     <ImageView
                         android:id="@+id/song_image_view"
-                        android:layout_width="60sp"
-                        android:layout_height="60sp"
+                        android:layout_width="65sp"
+                        android:layout_height="65sp"
                         android:contentDescription="@string/song_cover_image"
                         android:scaleType="centerCrop"
                         tools:srcCompat="@tools:sample/backgrounds/scenic" />
                 </FrameLayout>
 
-                <LinearLayout
+                <com.google.android.flexbox.FlexboxLayout
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
+                    app:flexDirection="column"
+                    app:justifyContent="space_evenly"
                     app:layout_constraintBottom_toBottomOf="@id/song_image_wrapper"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/song_image_wrapper"
@@ -281,8 +281,7 @@
                     <com.radiojhero.app.ui.MarqueeTextView
                         android:id="@+id/song_label"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal"
                         android:focusable="true"
@@ -292,49 +291,44 @@
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="Song Title Placeholder"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText" />
 
                     <com.radiojhero.app.ui.MarqueeTextView
                         android:id="@+id/artist_label"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:fontFamily="sans-serif-medium"
                         android:gravity="center_vertical"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="Song Artist Placeholder"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         tools:ignore="HardcodedText" />
 
                     <com.radiojhero.app.ui.MarqueeTextView
                         android:id="@+id/album_label"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:alpha="0.6"
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:fontFamily="sans-serif-medium"
-                        android:gravity="center_vertical"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="Song Album Placeholder"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:textStyle="italic"
                         tools:ignore="HardcodedText" />
 
-                </LinearLayout>
+                </com.google.android.flexbox.FlexboxLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout

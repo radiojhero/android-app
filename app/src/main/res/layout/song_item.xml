@@ -17,34 +17,35 @@
 
         <ImageView
             android:id="@+id/image_view"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="51sp"
+            android:layout_height="51sp"
             android:contentDescription="@string/song_cover_image"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
     </FrameLayout>
 
-    <LinearLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/image_wrapper"
+        app:flexDirection="column"
+        app:justifyContent="space_evenly"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/image_wrapper"
-        app:layout_constraintTop_toTopOf="@id/image_wrapper">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/title_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:gravity="center_vertical"
             android:scrollbars="none"
+            android:singleLine="true"
             android:text="Song Title"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             tools:ignore="HardcodedText" />
 
@@ -53,25 +54,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:gravity="center_vertical"
             android:scrollbars="none"
+            android:singleLine="true"
             android:text="Song Artist"
-            android:textSize="11sp"
+            android:textSize="12sp"
             tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/album_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:scrollbars="none"
-            android:text="Song Album"
             android:alpha="0.6"
-            android:textSize="11sp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:scrollbars="none"
+            android:singleLine="true"
+            android:text="Song Album"
+            android:textSize="12sp"
             android:textStyle="italic"
             tools:ignore="HardcodedText" />
 
-    </LinearLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
