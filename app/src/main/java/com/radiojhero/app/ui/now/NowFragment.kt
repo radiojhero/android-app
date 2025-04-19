@@ -311,9 +311,15 @@ class NowFragment : Fragment() {
             }
         }
         binding.djLabel.apply {
+            var djName = metadata.getString(MediaPlaybackService.DJ_NAME)
+
+            djName = if (djName.isNullOrBlank()) {
+                getString(R.string.playlist)
+            } else getString(R.string.dj_string, djName)
+
             val content = getString(
                 R.string.dj_and_genre,
-                metadata.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
+                djName,
                 metadata.getString(MediaPlaybackService.PROGRAM_GENRE)
             )
             if (content != text) {
@@ -331,7 +337,8 @@ class NowFragment : Fragment() {
         binding.songHistory3.visibility = View.GONE
 
         val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY) ?: emptyArray()
-        for ((index, line) in songHistory.slice(songHistory.size - 4..< songHistory.size).withIndex()) {
+        for ((index, line) in songHistory.slice(songHistory.size - 4..<songHistory.size)
+            .withIndex()) {
             if (index + 1 >= binding.songHistoryWrapper.size) {
                 break
             }
