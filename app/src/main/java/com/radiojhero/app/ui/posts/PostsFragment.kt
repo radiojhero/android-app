@@ -87,7 +87,7 @@ class PostsFragment : Fragment() {
 
                     if (it.isEmpty()) {
                         inflated.recyclerView.loadSkeleton(R.layout.post_item) {
-                            color(R.color.md_theme_surfaceDim)
+                            color(R.color.md_theme_surfaceVariant)
                             itemCount(60)
                         }
                         viewModel.fetch(true)

@@ -165,7 +165,7 @@ class NowFragment : Fragment() {
         val inflated = FragmentNowBinding.inflate(inflater, container, false)
         inflated.apply {
             constraintLayout.loadSkeleton {
-                color(R.color.md_theme_surfaceDim)
+                color(R.color.md_theme_surfaceVariant)
                 shimmer(true)
             }
             programImageWrapper.apply {
