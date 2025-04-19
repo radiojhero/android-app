@@ -303,15 +303,27 @@ class NowFragment : Fragment() {
         binding.djImage.visibility =
             if (djImageSrc.isNullOrBlank() || djImageSrc == "about:blank") View.GONE else View.VISIBLE
 
-        binding.programLabel.text = metadata.getString(MediaPlaybackService.PROGRAM_NAME)
+        binding.programLabel.apply {
+            val content = metadata.getString(MediaPlaybackService.PROGRAM_NAME)
+            if (content != text) {
+                text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
+        binding.djLabel.apply {
+            val content = getString(
+                R.string.dj_and_genre,
+                metadata.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
+                metadata.getString(MediaPlaybackService.PROGRAM_GENRE)
+            )
+            if (content != text) {
+                text = content
+                visibility = if (text.isBlank()) View.GONE else View.VISIBLE
+            }
+        }
+
         binding.descriptionLabel.text =
             metadata.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
-
-        binding.djLabel.text = getString(
-            R.string.dj_and_genre,
-            metadata.getString(MediaPlaybackService.DJ_NAME) ?: getString(R.string.playlist),
-            metadata.getString(MediaPlaybackService.PROGRAM_GENRE)
-        )
 
         binding.songHistory0.visibility = View.GONE
         binding.songHistory1.visibility = View.GONE

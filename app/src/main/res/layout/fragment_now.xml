@@ -99,6 +99,7 @@
                     android:id="@+id/program_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/gray_translucent"
                     android:contentDescription="@string/program_image_description"
                     android:scaleType="centerCrop"
                     tools:src="@tools:sample/backgrounds/scenic" />
@@ -113,11 +114,12 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
 
-                    <LinearLayout
+                    <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/now_program_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:minHeight="50dp"
+                        app:alignItems="center">
 
                         <ImageView
                             android:id="@+id/dj_image"
@@ -130,16 +132,19 @@
                             android:scaleType="centerCrop"
                             tools:src="@tools:sample/avatars" />
 
-                        <LinearLayout
+                        <com.google.android.flexbox.FlexboxLayout
                             android:layout_width="0dp"
-                            android:layout_height="50dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="10dp"
                             android:layout_marginBottom="10dp"
-                            android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:minHeight="50dp"
+                            app:flexDirection="column"
+                            app:justifyContent="space_evenly"
+                            app:layout_alignSelf="stretch"
+                            app:layout_flexGrow="1">
 
                             <com.radiojhero.app.ui.MarqueeTextView
                                 android:id="@+id/program_label"
@@ -159,12 +164,17 @@
                                 android:textStyle="bold"
                                 tools:ignore="HardcodedText" />
 
-                            <TextView
+                            <com.radiojhero.app.ui.MarqueeTextView
                                 android:id="@+id/dj_label"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:ellipsize="end"
+                                android:ellipsize="marquee"
+                                android:fadingEdge="horizontal"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
                                 android:fontFamily="sans-serif-light"
+                                android:gravity="center_vertical"
+                                android:marqueeRepeatLimit="marquee_forever"
                                 android:scrollHorizontally="true"
                                 android:singleLine="true"
                                 android:text="DJ Name · Genre"
@@ -172,9 +182,9 @@
                                 android:textSize="14sp"
                                 tools:ignore="HardcodedText" />
 
-                        </LinearLayout>
+                        </com.google.android.flexbox.FlexboxLayout>
 
-                    </LinearLayout>
+                    </com.google.android.flexbox.FlexboxLayout>
 
                     <LinearLayout
                         android:id="@+id/song_history_wrapper"
@@ -245,11 +255,12 @@
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/now_playing"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                app:alignItems="center"
                 app:layout_constraintEnd_toEndOf="@id/right_guideline"
                 app:layout_constraintStart_toStartOf="@id/left_guideline"
                 app:layout_constraintTop_toBottomOf="@id/program_image_wrapper">
@@ -258,14 +269,12 @@
                     android:id="@+id/song_image_wrapper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/gray_translucent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:background="@color/gray_translucent">
 
                     <ImageView
                         android:id="@+id/song_image_view"
-                        android:layout_width="65sp"
-                        android:layout_height="65sp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
                         android:contentDescription="@string/song_cover_image"
                         android:scaleType="centerCrop"
                         tools:srcCompat="@tools:sample/backgrounds/scenic" />
@@ -273,15 +282,17 @@
 
                 <com.google.android.flexbox.FlexboxLayout
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     app:flexDirection="column"
                     app:justifyContent="space_evenly"
+                    app:layout_alignSelf="stretch"
                     app:layout_constraintBottom_toBottomOf="@id/song_image_wrapper"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/song_image_wrapper"
-                    app:layout_constraintTop_toTopOf="@id/song_image_wrapper">
+                    app:layout_constraintTop_toTopOf="@id/song_image_wrapper"
+                    app:layout_flexGrow="1">
 
                     <com.radiojhero.app.ui.MarqueeTextView
                         android:id="@+id/song_label"
@@ -349,14 +360,14 @@
                         tools:ignore="HardcodedText" />
 
                 </com.google.android.flexbox.FlexboxLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
-            <LinearLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/now_progress_wrapper"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
+                app:alignItems="center"
                 app:layout_constraintEnd_toEndOf="@id/right_guideline"
                 app:layout_constraintStart_toStartOf="@id/left_guideline"
                 app:layout_constraintTop_toBottomOf="@id/now_playing">
@@ -379,8 +390,8 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:progress="50" />
+                    android:progress="50"
+                    app:layout_flexGrow="1" />
 
                 <TextView
                     android:id="@+id/duration_label"
@@ -391,7 +402,7 @@
                     android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
-            </LinearLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
             <TextView
                 android:id="@+id/description_label"
