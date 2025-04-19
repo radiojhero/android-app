@@ -18,6 +18,9 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.NetworkSingleton
 import com.radiojhero.app.fetchers.SongsFetcher
 import com.radiojhero.app.services.MediaPlaybackService
+import java.lang.NullPointerException
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 
 class InteractFragment : Fragment() {
@@ -124,39 +127,52 @@ class InteractFragment : Fragment() {
         }
 
         binding = inflated
-
-        mediaController = MediaControllerCompat.getMediaController(requireActivity()).apply {
-            registerCallback(controllerCallback)
-            programType = extras.getInt(MediaPlaybackService.PROGRAM_TYPE)
-
-            inflated.apply {
-                interactLabel.setText(
-                    when (programType) {
-                        MediaPlaybackService.PROGRAM_TYPE_LIVE -> R.string.label_interact
-                        MediaPlaybackService.PROGRAM_TYPE_PODCAST -> R.string.interact_unavailable
-                        MediaPlaybackService.PROGRAM_TYPE_PLAYLIST -> R.string.label_interact_playlist
-                        else -> R.string.label_interact_playlist
-                    }
-                )
-                editNameLayout.visibility =
-                    if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
-                editSongLayout.visibility =
-                    if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) View.VISIBLE else View.INVISIBLE
-                editSongAutocompleteLayout.visibility =
-                    if (programType == MediaPlaybackService.PROGRAM_TYPE_PLAYLIST) View.VISIBLE else View.INVISIBLE
-                editMessageLayout.visibility =
-                    if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
-                sendButton.visibility =
-                    if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
-            }
-        }
+        setupMediaController()
 
         return inflated.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mediaController.unregisterCallback(controllerCallback)
         binding = null
+    }
+
+    private fun setupMediaController() {
+        try {
+            mediaController = MediaControllerCompat.getMediaController(requireActivity()).apply {
+                registerCallback(controllerCallback)
+                programType = extras.getInt(MediaPlaybackService.PROGRAM_TYPE)
+
+                binding?.apply {
+                    interactLabel.setText(
+                        when (programType) {
+                            MediaPlaybackService.PROGRAM_TYPE_LIVE -> R.string.label_interact
+                            MediaPlaybackService.PROGRAM_TYPE_PODCAST -> R.string.interact_unavailable
+                            MediaPlaybackService.PROGRAM_TYPE_PLAYLIST -> R.string.label_interact_playlist
+                            else -> R.string.label_interact_playlist
+                        }
+                    )
+                    editNameLayout.visibility =
+                        if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
+                    editSongLayout.visibility =
+                        if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) View.VISIBLE else View.INVISIBLE
+                    editSongAutocompleteLayout.visibility =
+                        if (programType == MediaPlaybackService.PROGRAM_TYPE_PLAYLIST) View.VISIBLE else View.INVISIBLE
+                    editMessageLayout.visibility =
+                        if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
+                    sendButton.visibility =
+                        if (programType == MediaPlaybackService.PROGRAM_TYPE_PODCAST) View.INVISIBLE else View.VISIBLE
+                }
+            }
+        } catch (_: NullPointerException) {
+            Timer().schedule(50) {
+                println("Failed to set up mediaController; retrying...")
+                requireActivity().runOnUiThread {
+                    setupMediaController()
+                }
+            }
+        }
     }
 
     @Synchronized
