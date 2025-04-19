@@ -331,7 +331,7 @@ class NowFragment : Fragment() {
         binding.songHistory3.visibility = View.GONE
 
         val songHistory = metadata.getStringArray(MediaPlaybackService.SONG_HISTORY) ?: emptyArray()
-        for ((index, line) in songHistory.withIndex()) {
+        for ((index, line) in songHistory.slice(songHistory.size - 4..< songHistory.size).withIndex()) {
             if (index + 1 >= binding.songHistoryWrapper.size) {
                 break
             }
