@@ -143,5 +143,4 @@
     <color name="black">#FF000000</color>
     <color name="black_translucent">#D9000000</color>
     <color name="gray_translucent">#40808080</color>
-    <color name="white">#FFFFFFFF</color>
 </resources>

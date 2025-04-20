@@ -164,7 +164,7 @@
                                 android:scrollHorizontally="true"
                                 android:singleLine="true"
                                 android:text="Program Name"
-                                android:textColor="@color/white"
+                                android:textColor="@android:color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 tools:ignore="HardcodedText" />
@@ -183,7 +183,7 @@
                                 android:scrollHorizontally="true"
                                 android:singleLine="true"
                                 android:text="DJ Name · Genre"
-                                android:textColor="@color/white"
+                                android:textColor="@android:color/white"
                                 android:textSize="14sp"
                                 tools:ignore="HardcodedText" />
 
@@ -214,7 +214,7 @@
                             android:maxLines="1"
                             android:scrollHorizontally="true"
                             android:text="00:00 · Song Artist - Song Title"
-                            android:textColor="@color/white"
+                            android:textColor="@android:color/white"
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />
 
@@ -227,7 +227,7 @@
                             android:maxLines="1"
                             android:scrollHorizontally="true"
                             android:text="00:00 · Song Artist - Song Title"
-                            android:textColor="@color/white"
+                            android:textColor="@android:color/white"
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />
 
@@ -240,7 +240,7 @@
                             android:maxLines="1"
                             android:scrollHorizontally="true"
                             android:text="00:00 · Song Artist - Song Title"
-                            android:textColor="@color/white"
+                            android:textColor="@android:color/white"
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />
 
@@ -253,7 +253,7 @@
                             android:maxLines="1"
                             android:scrollHorizontally="true"
                             android:text="00:00 · Song Artist - Song Title"
-                            android:textColor="@color/white"
+                            android:textColor="@android:color/white"
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />
                     </LinearLayout>
