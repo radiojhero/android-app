@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.android.volley.toolbox.StringRequest
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentInteractBinding
 import com.radiojhero.app.endEditing
@@ -18,8 +18,7 @@ import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.NetworkSingleton
 import com.radiojhero.app.fetchers.SongsFetcher
 import com.radiojhero.app.services.MediaPlaybackService
-import java.lang.NullPointerException
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 
 
@@ -192,10 +191,7 @@ class InteractFragment : Fragment() {
                 ?: ""
 
         val request = object : StringRequest(Method.POST, url, { responseString ->
-            binding.apply {
-                sendButton.visibility = View.VISIBLE
-                progressIndicator.visibility = View.INVISIBLE
-            }
+            setLoading(false)
 
             if (if (programType == MediaPlaybackService.PROGRAM_TYPE_LIVE) responseString == "true" else responseString.isBlank()) {
                 alert(
@@ -229,10 +225,7 @@ class InteractFragment : Fragment() {
             }
         }
 
-        binding.apply {
-            sendButton.visibility = View.INVISIBLE
-            progressIndicator.visibility = View.VISIBLE
-        }
+        setLoading(true)
         network.requestQueue.add(request)
     }
 
@@ -312,6 +305,13 @@ class InteractFragment : Fragment() {
         }
     }
 
+    private fun setLoading(toggle: Boolean) {
+        binding?.apply {
+            sendButton.visibility = if (toggle) View.INVISIBLE else View.VISIBLE
+            progressIndicator.visibility = if (toggle) View.VISIBLE else View.INVISIBLE
+        }
+    }
+
     private fun alert(@StringRes titleId: Int, @StringRes messageId: Int) {
         alert(getString(titleId), getString(messageId))
     }
@@ -321,7 +321,7 @@ class InteractFragment : Fragment() {
     }
 
     private fun alert(title: String, message: String) {
-        AlertDialog.Builder(requireContext()).setTitle(title).setMessage(message)
+        MaterialAlertDialogBuilder(requireContext()).setTitle(title).setMessage(message)
             .setPositiveButton(R.string.button_dismiss, null).show()
     }
 }
