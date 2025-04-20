@@ -100,7 +100,7 @@
                     android:id="@+id/program_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/gray_translucent"
+                    android:background="@color/md_theme_surfaceVariant"
                     android:contentDescription="@string/program_image_description"
                     android:scaleType="centerCrop"
                     tools:src="@tools:sample/backgrounds/scenic" />
@@ -282,7 +282,7 @@
                     android:id="@+id/song_image_wrapper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/gray_translucent">
+                    android:background="@color/md_theme_surfaceVariant">
 
                     <ImageView
                         android:id="@+id/song_image_view"

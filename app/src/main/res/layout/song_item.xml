@@ -12,7 +12,7 @@
         android:id="@+id/image_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/gray_translucent">
+        android:background="@color/md_theme_surfaceVariant">
 
         <ImageView
             android:id="@+id/image_view"
