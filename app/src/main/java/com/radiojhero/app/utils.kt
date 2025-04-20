@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.graphics.Outline
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
@@ -57,13 +56,19 @@ fun switchTheme(theme: String) {
     )
 }
 
-fun View.expand(duration: Long) {
-    measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-    val targetHeight = measuredHeight
+fun View.expand(duration: Long, fillParent: Boolean = false) {
+    val targetHeight = if (fillParent) {
+        val parent = this.parent as View
+        parent.width
+    } else {
+        measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        measuredHeight
+    }
 
     layoutParams.height = 0
+    this.layoutParams = layoutParams
     visibility = View.VISIBLE
-    val anim = ValueAnimator.ofInt(measuredHeight, targetHeight)
+    val anim = ValueAnimator.ofInt(0, targetHeight)
     anim.interpolator = AccelerateDecelerateInterpolator()
     anim.duration = duration
     anim.addUpdateListener {
@@ -74,26 +79,28 @@ fun View.expand(duration: Long) {
 
     anim.addListener(object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            layoutParams.height = if (fillParent) targetHeight else LinearLayout.LayoutParams.WRAP_CONTENT
+            this@expand.layoutParams = layoutParams
         }
     })
     anim.start()
 }
 
 fun View.collapse(duration: Long) {
-    measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-    val anim = ValueAnimator.ofInt(measuredHeight, 0)
+    val sourceHeight = height
+    val anim = ValueAnimator.ofInt(sourceHeight, 0)
     anim.interpolator = AccelerateDecelerateInterpolator()
     anim.duration = duration
     anim.addUpdateListener {
         val layoutParams = layoutParams
-        layoutParams.height = (measuredHeight * (1 - it.animatedFraction)).toInt()
+        layoutParams.height = (sourceHeight * (1 - it.animatedFraction)).toInt()
         this.layoutParams = layoutParams
     }
 
     anim.addListener(object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             layoutParams.height = 0
+            this@collapse.layoutParams = layoutParams
             visibility = View.GONE
         }
     })

@@ -12,6 +12,7 @@
     <string name="setting_notifications">Notificações</string>
     <string name="label_now">Agora na J-Hero</string>
     <string name="live">AO VIVO</string>
+    <string name="action_lyrics">Acompanhar Letra</string>
     <string name="action_song_history">Histórico de Músicas</string>
     <string name="action_schedule">Grade de Programação</string>
     <string name="action_share">Compartilhar</string>
@@ -54,4 +55,5 @@
     <string name="posts_error">Não foi possível obter a lista de artigos. Tente novamente mais tarde.</string>
     <string name="song_cover_image">Arte de capa da música</string>
     <string name="requester_string">(pedido de &lt;b>%1$s&lt;/b>)</string>
+    <string name="lyrics_missing">Ainda não temos a letra desta música…</string>
 </resources>

@@ -105,11 +105,12 @@
                     android:scaleType="centerCrop"
                     tools:src="@tools:sample/backgrounds/scenic" />
 
-                <LinearLayout
-                    android:id="@+id/program_info_and_history"
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/gradient_wrapper"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    app:flexDirection="column"
+                    app:justifyContent="flex_end"
                     app:layout_constraintBottom_toBottomOf="@id/program_image"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -265,18 +266,90 @@
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />
                     </LinearLayout>
-                </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lyrics_wrapper"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:orientation="vertical"
+                        android:background="@color/black"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/missing_lyrics_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:padding="15dp"
+                            android:text="@string/lyrics_missing"
+                            android:textColor="@android:color/white" />
+
+                        <androidx.core.widget.NestedScrollView
+                            android:id="@+id/lyrics_pane"
+                            android:layout_width="match_parent"
+                            android:visibility="gone"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/lyrics_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="15dp"
+                                android:textColor="@android:color/white" />
+                        </androidx.core.widget.NestedScrollView>
+                    </LinearLayout>
+                </com.google.android.flexbox.FlexboxLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/buttons"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:justifyContent="space_between"
+                app:layout_constraintEnd_toEndOf="@id/right_guideline"
+                app:layout_constraintStart_toStartOf="@id/left_guideline"
+                app:layout_constraintTop_toBottomOf="@id/program_image_wrapper">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/lyrics_button"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:contentDescription="@string/action_lyrics"
+                    app:icon="@drawable/lyrics"
+                    app:iconTint="@color/md_theme_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/history_button"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:contentDescription="@string/action_song_history"
+                    app:icon="@drawable/ic_baseline_history_24"
+                    app:iconTint="@color/md_theme_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/schedule_button"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/action_schedule"
+                    app:icon="@drawable/calendar_today"
+                    app:iconTint="@color/md_theme_primary" />
+            </com.google.android.flexbox.FlexboxLayout>
 
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/now_playing"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 app:alignItems="center"
                 app:layout_constraintEnd_toEndOf="@id/right_guideline"
                 app:layout_constraintStart_toStartOf="@id/left_guideline"
-                app:layout_constraintTop_toBottomOf="@id/program_image_wrapper">
+                app:layout_constraintTop_toBottomOf="@id/buttons">
 
                 <FrameLayout
                     android:id="@+id/song_image_wrapper"

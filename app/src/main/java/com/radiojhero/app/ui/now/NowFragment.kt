@@ -5,18 +5,13 @@ import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.text.format.DateUtils
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
-import androidx.core.view.MenuProvider
 import androidx.core.view.get
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -170,6 +165,15 @@ class NowFragment : Fragment() {
                 clipToOutline = true
                 outlineProvider = RoundedOutlineProvider(5f)
             }
+            lyricsButton.addOnCheckedChangeListener { _, _ ->
+                toggleLyrics()
+            }
+            historyButton.addOnCheckedChangeListener { _, _ ->
+                toggleSongHistory()
+            }
+            scheduleButton.setOnClickListener { _ ->
+                showSchedule()
+            }
             nowRoot.setOnScrollChangeListener { _, _, y, _, _ ->
                 (requireActivity() as MainActivity).toggleAppBarBackground(y > 0)
             }
@@ -181,43 +185,17 @@ class NowFragment : Fragment() {
         return inflated.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                createMenu(menu, menuInflater)
-            }
-
-            override fun onMenuItemSelected(item: MenuItem): Boolean {
-                return selectMenu(item)
-            }
-        }, viewLifecycleOwner, Lifecycle.State.STARTED)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         mediaController.unregisterCallback(controllerCallback)
         binding = null
     }
 
-    private fun createMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.now_menu, menu)
-    }
-
-    private fun selectMenu(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_schedule) {
-            val action = NowFragmentDirections.actionNavigationNowToNavigationWebpage(
-                ConfigFetcher.getConfig("scheduleUrl") ?: ""
-            )
-            activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
-            return true
-        }
-
-        if (item.itemId == R.id.action_song_history) {
-            toggleSongHistory()
-            return true
-        }
-
-        return false
+    private fun showSchedule() {
+        val action = NowFragmentDirections.actionNavigationNowToNavigationWebpage(
+            ConfigFetcher.getConfig("scheduleUrl") ?: ""
+        )
+        activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
     }
 
     override fun onStart() {
@@ -377,6 +355,17 @@ class NowFragment : Fragment() {
             MediaPlaybackService.SONG_START_TIME
         )
 
+        val lyrics = metadata.getString(MediaPlaybackService.SONG_LYRICS)
+        binding.lyricsText.text = lyrics
+
+        if (lyrics.isNullOrBlank()) {
+            binding.lyricsPane.visibility = View.GONE
+            binding.missingLyricsText.visibility = View.VISIBLE
+        } else {
+            binding.lyricsPane.visibility = View.VISIBLE
+            binding.missingLyricsText.visibility = View.GONE
+        }
+
         startUpdatingProgress()
     }
 
@@ -426,15 +415,19 @@ class NowFragment : Fragment() {
         return DateUtils.formatElapsedTime(time / 1000)
     }
 
-    private var showSongHistory = false
+    private fun toggleLyrics() {
+        if (binding?.lyricsButton?.isChecked!!) {
+            binding?.lyricsWrapper?.expand(200, true)
+        } else {
+            binding?.lyricsWrapper?.collapse(200)
+        }
+    }
 
     private fun toggleSongHistory() {
-        showSongHistory = !showSongHistory
-
-        if (showSongHistory) {
-            binding?.songHistoryWrapper?.expand(250)
+        if (binding?.historyButton?.isChecked!!) {
+            binding?.songHistoryWrapper?.expand(200)
         } else {
-            binding?.songHistoryWrapper?.collapse(250)
+            binding?.songHistoryWrapper?.collapse(200)
         }
     }
 }

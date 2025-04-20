@@ -54,6 +54,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         const val SONG_ALBUM = "com.radiojhero.app.SONG_ALBUM"
         const val SONG_REQUESTER = "com.radiojhero.app.SONG_REQUESTER"
         const val SONG_IMAGE = "com.radiojhero.app.SONG_IMAGE"
+        const val SONG_LYRICS = "com.radiojhero.app.SONG_LYRICS"
         const val SONG_HISTORY = "com.radiojhero.app.SONG_HISTORY"
         const val PROGRAM_DESCRIPTION = "com.radiojhero.app.PROGRAM_DESCRIPTION"
         const val LAST_UPDATED_TIME = "com.radiojhero.app.LAST_UPDATED_TIME"
@@ -337,6 +338,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
 
+        var songLyrics = ""
+        val lyrics = metadata.getJSONArray("current_song_lyrics")
+        if (lyrics.length() > 0) {
+            val verse = lyrics.getJSONObject(0)
+            if (verse.getString("id") == "raw") {
+                songLyrics = verse.getString("text")
+            }
+        }
+
         bundle.apply {
             putString(PROGRAM_IMAGE, programImageSrc)
             putString(DJ_IMAGE, djImageSrc)
@@ -348,6 +358,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putString(SONG_ALBUM, song.getString("album"))
             putString(SONG_REQUESTER, song.optString("requested_by", ""))
             putString(SONG_IMAGE, songImageSrc)
+            putString(SONG_LYRICS, songLyrics)
             putStringArray(SONG_HISTORY, formattedSongHistory.toTypedArray())
             putLong(CURRENT_TIME, metadata.getLong("current_time"))
             putLong(SONG_START_TIME, song.getLong("start_time"))
