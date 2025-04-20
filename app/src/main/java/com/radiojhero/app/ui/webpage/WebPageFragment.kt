@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.webkit.WebViewClientCompat
+import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentWebpageBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
@@ -100,6 +101,10 @@ class WebPageFragment : Fragment() {
             "Mozilla/5.0 RadioJHero/${getString(R.string.version_name)} (Android)"
 
         webView.loadUrl(args.url)
+        webView.setOnScrollChangeListener { _, _, y, _, _ ->
+            (requireActivity() as MainActivity).toggleAppBarBackground(y > 0)
+        }
+        (requireActivity() as MainActivity).toggleAppBarBackground(webView.scrollY > 0)
     }
 
     private fun createMenu(menu: Menu, inflater: MenuInflater) {
