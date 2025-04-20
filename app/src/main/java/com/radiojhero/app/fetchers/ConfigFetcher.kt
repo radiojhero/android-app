@@ -7,9 +7,7 @@ import java.io.BufferedInputStream
 import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.Properties
-import java.util.Scanner
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
 class ConfigFetcher {

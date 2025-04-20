@@ -17,7 +17,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
             println("Changing preference '$key'")
             when (key) {
-                "format" -> (activity as MainActivity).switchFormat(sharedPreferences.getString(key, "mp3") ?: "mp3")
+                "format" -> (activity as MainActivity).switchFormat(
+                    sharedPreferences.getString(
+                        key, "mp3"
+                    ) ?: "mp3"
+                )
+
                 "appearance" -> switchTheme(sharedPreferences.getString(key, "system") ?: "system")
                 "notification" -> setNotificationMode(
                     sharedPreferences.getString(key, "none") ?: "none"

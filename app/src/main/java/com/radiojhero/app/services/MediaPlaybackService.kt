@@ -93,7 +93,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private lateinit var selectedMediaId: String
 
     private fun setMetadataOffset() {
-        val format = PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
+        val format =
+            PreferenceManager.getDefaultSharedPreferences(this).getString("format", "mp3") ?: "mp3"
         fetcher.offset = if (format == "ogg") 16384L else 8192L
         fetcher.forceFetch()
     }
@@ -109,15 +110,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
             audioFocus = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(
-                    AudioAttributesCompat.Builder()
-                        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-                        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
-                        .build()
-                )
-                .setOnAudioFocusChangeListener {
+                    AudioAttributesCompat.Builder().setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                        .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC).build()
+                ).setOnAudioFocusChangeListener {
                     onStop()
-                }
-                .build()
+                }.build()
 
             player.apply {
                 val source = reinitPlayer()
@@ -172,11 +169,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         player = ExoPlayer.Builder(this).apply {
             setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .build(),
-                false
+                AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), false
             )
         }.build()
         player.addListener(object : Player.Listener {
@@ -198,13 +192,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             updateMetadata()
         }
 
-        stateBuilder =
-            PlaybackStateCompat.Builder().setActions(
-                PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_STOP or
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
-            )
+        stateBuilder = PlaybackStateCompat.Builder().setActions(
+            PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+        )
 
         mediaSession = MediaSessionCompat(baseContext, "MediaPlaybackService").apply {
             setCallback(callback)
@@ -243,25 +233,16 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         result.sendResult(
             if (parentMediaId == ROOT) listOf(
                 MediaBrowserCompat.MediaItem(
-                    MediaDescriptionCompat.Builder()
-                        .setTitle("MP3 320 kbps")
-                        .setMediaId("mp3")
-                        .build(),
-                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                    MediaDescriptionCompat.Builder().setTitle("MP3 320 kbps").setMediaId("mp3")
+                        .build(), MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                 ),
                 MediaBrowserCompat.MediaItem(
-                    MediaDescriptionCompat.Builder()
-                        .setTitle("AAC 128 kbps")
-                        .setMediaId("aac")
-                        .build(),
-                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                    MediaDescriptionCompat.Builder().setTitle("AAC 128 kbps").setMediaId("aac")
+                        .build(), MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                 ),
                 MediaBrowserCompat.MediaItem(
-                    MediaDescriptionCompat.Builder()
-                        .setTitle("Ogg Opus 32 kbps")
-                        .setMediaId("ogg")
-                        .build(),
-                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+                    MediaDescriptionCompat.Builder().setTitle("Ogg Opus 32 kbps").setMediaId("ogg")
+                        .build(), MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                 ),
             ) else null
         )
@@ -301,10 +282,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 setExtras(Bundle(bundle))
                 setPlaybackState(
                     stateBuilder.setState(
-                        playbackState,
-                        0,
-                        1f,
-                        SystemClock.elapsedRealtime()
+                        playbackState, 0, 1f, SystemClock.elapsedRealtime()
                     ).build()
                 )
             }
@@ -387,13 +365,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             putBoolean(HAS_ERROR, false)
         }
 
-        metadataBuilder
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getString("title"))
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getString("title"))
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getString("artist"))
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, song.getString("album"))
-            .putLong(
-                MediaMetadataCompat.METADATA_KEY_DURATION,
-                (song.optLong("duration", -1L))
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, song.getString("album")).putLong(
+                MediaMetadataCompat.METADATA_KEY_DURATION, (song.optLong("duration", -1L))
             )
 
         if (this.songImageSrc != songImageSrc) {
@@ -414,10 +389,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             setMetadata(metadataBuilder.build())
             setPlaybackState(
                 stateBuilder.setState(
-                    playbackState,
-                    songProgress,
-                    1f,
-                    SystemClock.elapsedRealtime()
+                    playbackState, songProgress, 1f, SystemClock.elapsedRealtime()
                 ).build()
             )
         }
@@ -447,37 +419,25 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         val description = mediaSession.controller.metadata.description
 
         val action =
-            if (playbackState == PlaybackStateCompat.STATE_STOPPED)
-                NotificationCompat.Action(
-                    R.drawable.ic_baseline_play_arrow_24,
-                    getString(R.string.play),
-                    playPauseIntent
-                )
-            else
-                NotificationCompat.Action(
-                    R.drawable.ic_baseline_pause_24,
-                    getString(R.string.pause),
-                    playPauseIntent
-                )
+            if (playbackState == PlaybackStateCompat.STATE_STOPPED) NotificationCompat.Action(
+                R.drawable.ic_baseline_play_arrow_24, getString(R.string.play), playPauseIntent
+            )
+            else NotificationCompat.Action(
+                R.drawable.ic_baseline_pause_24, getString(R.string.pause), playPauseIntent
+            )
 
         startForeground(
             1,
-            NotificationCompat.Builder(this, "MediaPlayback")
-                .setContentTitle(description.title)
-                .setContentText(description.subtitle)
-                .setLargeIcon(description.iconBitmap)
+            NotificationCompat.Builder(this, "MediaPlayback").setContentTitle(description.title)
+                .setContentText(description.subtitle).setLargeIcon(description.iconBitmap)
                 .setContentIntent(mediaSession.controller.sessionActivity)
-                .setDeleteIntent(stopIntent)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setDeleteIntent(stopIntent).setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.ic_onesignal_large_icon_default)
-                .setColor(ContextCompat.getColor(this, R.color.md_theme_primary))
-                .addAction(action)
+                .setColor(ContextCompat.getColor(this, R.color.md_theme_primary)).addAction(action)
                 .setStyle(
                     androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession.sessionToken)
-                        .setShowActionsInCompactView(0)
-                )
-                .build()
+                        .setMediaSession(mediaSession.sessionToken).setShowActionsInCompactView(0)
+                ).build()
         )
     }
 }

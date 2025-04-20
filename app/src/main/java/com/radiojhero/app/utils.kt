@@ -15,8 +15,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
 import java.text.Normalizer
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 
 fun getNow(): Long {
     return Calendar.getInstance().timeInMillis

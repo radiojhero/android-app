@@ -26,8 +26,7 @@ class SongsFetcher {
         private var currentRequest: JsonObjectRequest? = null
 
         fun fetch(
-            context: Context,
-            completionHandler: (metadata: List<Song>?) -> Unit
+            context: Context, completionHandler: (metadata: List<Song>?) -> Unit
         ) {
             if (isFetching) {
                 return
@@ -65,8 +64,13 @@ class SongsFetcher {
                     isFetching = false
                 }
             }, { error ->
-                println("Error while fetching songs: $error ${error.networkResponse?.data?.toString(
-                    Charset.forName("utf-8")) ?: "unknown"}")
+                println(
+                    "Error while fetching songs: $error ${
+                        error.networkResponse?.data?.toString(
+                            Charset.forName("utf-8")
+                        ) ?: "unknown"
+                    }"
+                )
                 completionHandler(null)
                 isFetching = false
             })

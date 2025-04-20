@@ -14,10 +14,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
+            android:id="@+id/top_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize" />
+            android:minHeight="?attr/actionBarSize"
+            app:logo="@mipmap/ic_logojhero" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -36,11 +37,11 @@
         android:id="@+id/bottom_app_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:contentInsetStart="0dp"
         app:contentInsetEnd="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:contentInsetStart="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="BottomAppBar">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

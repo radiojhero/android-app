@@ -7,7 +7,7 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.radiojhero.app.getNow
 import org.json.JSONObject
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.math.max
 import kotlin.math.min
@@ -62,45 +62,39 @@ class MetadataFetcher {
     }
 
     private fun fetch() {
-        val url = (ConfigFetcher.getConfig("metadataUrl") ?: "about:blank").toUri()
-            .buildUpon().appendQueryParameter("offset", offset.toString()).build()
+        val url = (ConfigFetcher.getConfig("metadataUrl") ?: "about:blank").toUri().buildUpon()
+            .appendQueryParameter("offset", offset.toString()).build()
         println("Fetching metadata... $url")
 
-        mCurrentRequest = JsonObjectRequest(
-            Request.Method.GET, url.toString(), null,
-            { data ->
-                mError = null
-                mData = data
-                mLastUpdatedAt = getNow()
-                println("Metadata fetched and parsed.")
-                mCallback()
+        mCurrentRequest = JsonObjectRequest(Request.Method.GET, url.toString(), null, { data ->
+            mError = null
+            mData = data
+            mLastUpdatedAt = getNow()
+            println("Metadata fetched and parsed.")
+            mCallback()
 
-                var delay = interval
-                try {
-                    val song = data.getJSONArray("song_history").getJSONObject(0)
-                    val songDuration = song.optLong("duration", -1L)
-                    if (songDuration >= 0) {
-                        delay = max(
-                            0L,
-                            min(
-                                delay,
-                                song.getLong("start_time") + songDuration - data.getLong(
-                                    "current_time"
-                                )
+            var delay = interval
+            try {
+                val song = data.getJSONArray("song_history").getJSONObject(0)
+                val songDuration = song.optLong("duration", -1L)
+                if (songDuration >= 0) {
+                    delay = max(
+                        0L, min(
+                            delay, song.getLong("start_time") + songDuration - data.getLong(
+                                "current_time"
                             )
                         )
-                    }
-                } catch (_: Exception) {
+                    )
                 }
-                setTimeout(delay)
-            },
-            { error ->
-                println("Error while fetching metadata: $error")
-                mError = error
-                mCallback()
-                setTimeout(interval)
+            } catch (_: Exception) {
             }
-        )
+            setTimeout(delay)
+        }, { error ->
+            println("Error while fetching metadata: $error")
+            mError = error
+            mCallback()
+            setTimeout(interval)
+        })
 
         mNetwork.requestQueue.add(mCurrentRequest)
     }

@@ -46,8 +46,7 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
         OneSignal.Location.isShared = false
         OneSignal.Notifications.addClickListener(object : INotificationClickListener {
             override fun onClick(event: INotificationClickEvent) {
-                val url = event.notification.additionalData?.getString("myurl")
-                    ?: return
+                val url = event.notification.additionalData?.getString("myurl") ?: return
 
                 if (Uri.parse(url).host != ConfigFetcher.getConfig("host")) {
                     return
@@ -56,12 +55,9 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
                 val args = Bundle()
                 args.putString("url", url)
 
-                NavDeepLinkBuilder(this@RadioJHeroApplication)
-                    .setGraph(R.navigation.mobile_navigation)
-                    .setDestination(R.id.navigation_webpage)
-                    .setArguments(args)
-                    .createTaskStackBuilder()
-                    .startActivities()
+                NavDeepLinkBuilder(this@RadioJHeroApplication).setGraph(R.navigation.mobile_navigation)
+                    .setDestination(R.id.navigation_webpage).setArguments(args)
+                    .createTaskStackBuilder().startActivities()
             }
         })
     }

@@ -50,10 +50,7 @@ class NowFragment : Fragment() {
     private var programImageLoaded = false
     private val programImageListener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
+            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean
         ): Boolean {
             if (programImageLoaded) {
                 return false
@@ -82,10 +79,7 @@ class NowFragment : Fragment() {
     private var djImageLoaded = false
     private val djImageListener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
+            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean
         ): Boolean {
             if (djImageLoaded) {
                 return false
@@ -114,10 +108,7 @@ class NowFragment : Fragment() {
     private var songImageLoaded = false
     private val songImageListener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
+            e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean
         ): Boolean {
             if (songImageLoaded) {
                 return false
@@ -158,9 +149,7 @@ class NowFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val inflated = FragmentNowBinding.inflate(inflater, container, false)
         inflated.apply {
@@ -211,10 +200,9 @@ class NowFragment : Fragment() {
 
     private fun selectMenu(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_schedule) {
-            val action =
-                NowFragmentDirections.actionNavigationNowToNavigationWebpage(
-                    ConfigFetcher.getConfig("scheduleUrl") ?: ""
-                )
+            val action = NowFragmentDirections.actionNavigationNowToNavigationWebpage(
+                ConfigFetcher.getConfig("scheduleUrl") ?: ""
+            )
             activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
             return true
         }
@@ -271,20 +259,17 @@ class NowFragment : Fragment() {
         }
 
         Glide.with(this).load(metadata.getString(MediaPlaybackService.PROGRAM_IMAGE))
-            .addListener(programImageListener)
-            .into(binding.programImage)
+            .addListener(programImageListener).into(binding.programImage)
 
         val djImageSrc = metadata.getString(MediaPlaybackService.DJ_IMAGE)
         if (djImageSrc.isNullOrBlank() || djImageSrc == "about:blank") {
             djImageLoaded = true
         } else {
-            Glide.with(this).load(djImageSrc).addListener(djImageListener)
-                .into(binding.djImage)
+            Glide.with(this).load(djImageSrc).addListener(djImageListener).into(binding.djImage)
         }
 
         Glide.with(this).load(metadata.getString(MediaPlaybackService.SONG_IMAGE))
-            .addListener(songImageListener)
-            .into(binding.songImageView)
+            .addListener(songImageListener).into(binding.songImageView)
 
         lastUpdatedAt = metadata.getLong(MediaPlaybackService.LAST_UPDATED_TIME)
         maybeFinishUpdatingMetadata()
@@ -328,8 +313,7 @@ class NowFragment : Fragment() {
             }
         }
 
-        binding.descriptionLabel.text =
-            metadata.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
+        binding.descriptionLabel.text = metadata.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
 
         binding.songHistory0.visibility = View.GONE
         binding.songHistory1.visibility = View.GONE
@@ -384,10 +368,9 @@ class NowFragment : Fragment() {
         }
 
         songDuration = metadata.getLong(MediaPlaybackService.SONG_DURATION)
-        songProgress =
-            metadata.getLong(MediaPlaybackService.CURRENT_TIME) - metadata.getLong(
-                MediaPlaybackService.SONG_START_TIME
-            )
+        songProgress = metadata.getLong(MediaPlaybackService.CURRENT_TIME) - metadata.getLong(
+            MediaPlaybackService.SONG_START_TIME
+        )
 
         startUpdatingProgress()
     }

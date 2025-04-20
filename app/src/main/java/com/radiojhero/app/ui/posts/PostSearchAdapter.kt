@@ -26,8 +26,7 @@ class PostSearchAdapter(private val listener: (post: PostsFetcher.Post) -> Unit)
 
         override fun bind(post: PostsFetcher.Post, onClick: (post: PostsFetcher.Post) -> Unit) {
             titleLabel.text = HtmlCompat.fromHtml(post.title, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            excerptLabel.text =
-                HtmlCompat.fromHtml(post.subtitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            excerptLabel.text = HtmlCompat.fromHtml(post.subtitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
             Glide.with(itemView).load(post.coverImage).into(thumbnail)
 
             itemView.setOnClickListener {
@@ -66,8 +65,8 @@ class PostSearchAdapter(private val listener: (post: PostsFetcher.Post) -> Unit)
             return HeaderViewHolder(view)
         }
 
-        val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.search_hit, viewGroup, false)
+        val view =
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.search_hit, viewGroup, false)
 
         view.findViewById<View>(R.id.thumbnail_wrapper).apply {
             clipToOutline = true
@@ -83,6 +82,7 @@ class PostSearchAdapter(private val listener: (post: PostsFetcher.Post) -> Unit)
                 title = nbHits.toString(),
                 subtitle = processingTimeMS.toString(),
             )
+
             else -> dataSet[position - 1]
         }
 

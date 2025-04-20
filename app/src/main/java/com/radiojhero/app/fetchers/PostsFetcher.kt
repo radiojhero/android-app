@@ -60,9 +60,7 @@ class PostsFetcher {
         private var currentRequest: JsonObjectRequest? = null
 
         fun fetch(
-            context: Context,
-            reset: Boolean,
-            completionHandler: (metadata: List<Post>?) -> Unit
+            context: Context, reset: Boolean, completionHandler: (metadata: List<Post>?) -> Unit
         ) {
             if (isFetching) {
                 return
@@ -84,17 +82,19 @@ class PostsFetcher {
 
             currentRequest = JsonObjectRequest(Request.Method.POST, url, body, { response ->
                 try {
-                    val data =
-                        response.getJSONObject("data").getJSONArray("posts")
+                    val data = response.getJSONObject("data").getJSONArray("posts")
                     val posts = mutableListOf<Post>()
 
                     offset += 1
                     for (index in 0 until data.length()) {
                         val post = data.getJSONObject(index)
-                        val node = post.getJSONObject("revisionsConnection").getJSONArray("edges").getJSONObject(0).getJSONObject("node")
+                        val node = post.getJSONObject("revisionsConnection").getJSONArray("edges")
+                            .getJSONObject(0).getJSONObject("node")
 
                         val date = OffsetDateTime.parse(node.getString("publishedAt"))
-                        val link = "/${node.getJSONObject("category").getString("slug")}/${date.format(DateTimeFormatter.ofPattern("yyyy/MM"))}/${post.getString("slug")}"
+                        val link = "/${node.getJSONObject("category").getString("slug")}/${
+                            date.format(DateTimeFormatter.ofPattern("yyyy/MM"))
+                        }/${post.getString("slug")}"
 
                         posts.add(
                             Post(
@@ -117,7 +117,13 @@ class PostsFetcher {
                     isFetching = false
                 }
             }, { error ->
-                println("Error while fetching posts: $error ${error.networkResponse.data.toString(Charset.forName("utf-8"))}")
+                println(
+                    "Error while fetching posts: $error ${
+                        error.networkResponse.data.toString(
+                            Charset.forName("utf-8")
+                        )
+                    }"
+                )
                 completionHandler(null)
                 isFetching = false
             })

@@ -14,7 +14,7 @@ import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.fetchers.PostsFetcher
 import com.radiojhero.app.pmDocToHTML
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
@@ -29,7 +29,8 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
         private val dateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
 
         fun bind(post: PostsFetcher.Post, onClick: (post: PostsFetcher.Post) -> Unit) {
-            titleLabel.text = HtmlCompat.fromHtml(pmDocToHTML(post.title), HtmlCompat.FROM_HTML_MODE_LEGACY)
+            titleLabel.text =
+                HtmlCompat.fromHtml(pmDocToHTML(post.title), HtmlCompat.FROM_HTML_MODE_LEGACY)
             subtitleLabel.text =
                 HtmlCompat.fromHtml(pmDocToHTML(post.subtitle), HtmlCompat.FROM_HTML_MODE_LEGACY)
             categoryLabel.text = post.category
@@ -45,8 +46,8 @@ class PostsAdapter(private val listener: (post: PostsFetcher.Post) -> Unit) :
     private val dataSet = mutableListOf<PostsFetcher.Post>()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.post_item, viewGroup, false)
+        val view =
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.post_item, viewGroup, false)
 
         view.findViewById<View>(R.id.image_and_date).apply {
             clipToOutline = true

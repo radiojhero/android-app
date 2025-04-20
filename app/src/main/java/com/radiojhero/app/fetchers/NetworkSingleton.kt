@@ -8,12 +8,11 @@ class NetworkSingleton(context: Context) {
     companion object {
         @Volatile
         private var INSTANCE: NetworkSingleton? = null
-        fun getInstance(context: Context) =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: NetworkSingleton(context).also {
-                    INSTANCE = it
-                }
+        fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
+            INSTANCE ?: NetworkSingleton(context).also {
+                INSTANCE = it
             }
+        }
     }
 
     val requestQueue: RequestQueue by lazy {

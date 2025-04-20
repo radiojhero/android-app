@@ -16,11 +16,8 @@ import com.radiojhero.app.fetchers.SongsFetcher.Song
 import com.radiojhero.app.normalize
 
 class SongsAdapter(
-    context: Context,
-    @LayoutRes private val layoutResource: Int,
-    private val allSongs: List<Song>
-) :
-    ArrayAdapter<Song>(context, layoutResource, allSongs), Filterable {
+    context: Context, @LayoutRes private val layoutResource: Int, private val allSongs: List<Song>
+) : ArrayAdapter<Song>(context, layoutResource, allSongs), Filterable {
     private var mSongs: List<Song> = allSongs
 
     override fun getCount(): Int {
@@ -67,14 +64,11 @@ class SongsAdapter(
                 val queryString = charSequence?.toString()?.normalize()
 
                 val filterResults = FilterResults()
-                filterResults.values = if (queryString.isNullOrEmpty())
-                    allSongs
-                else
-                    allSongs.filter {
-                        it.album.normalize().contains(queryString) ||
-                                it.artist.normalize().contains(queryString) ||
-                                it.title.normalize().contains(queryString)
-                    }
+                filterResults.values = if (queryString.isNullOrEmpty()) allSongs
+                else allSongs.filter {
+                    it.album.normalize().contains(queryString) || it.artist.normalize()
+                        .contains(queryString) || it.title.normalize().contains(queryString)
+                }
                 return filterResults
             }
         }

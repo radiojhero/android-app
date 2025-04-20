@@ -67,9 +67,7 @@ class PostsFragment : Fragment() {
     private var isSearching = false
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val inflated = FragmentPostsBinding.inflate(inflater, container, false)
         binding = inflated
@@ -102,11 +100,9 @@ class PostsFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.hasError.collect {
                     if (it && mAdapter.itemCount == 0) {
-                        AlertDialog.Builder(requireContext())
-                            .setTitle(R.string.error)
+                        AlertDialog.Builder(requireContext()).setTitle(R.string.error)
                             .setMessage(R.string.posts_error)
-                            .setPositiveButton(R.string.button_dismiss, null)
-                            .show()
+                            .setPositiveButton(R.string.button_dismiss, null).show()
                         inflated.recyclerView.hideSkeleton()
                         inflated.postsView.isRefreshing = false
                     }
@@ -137,32 +133,29 @@ class PostsFragment : Fragment() {
     private fun createMenu(menu: Menu, inflater: MenuInflater) {
         val binding = this.binding ?: return
         inflater.inflate(R.menu.articles_menu, menu)
-        val searchView =
-            menu.findItem(R.id.action_search).actionView as SearchView
+        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
         val searchManager = requireActivity().getSystemService(SEARCH_SERVICE) as SearchManager?
         searchView.setSearchableInfo(searchManager!!.getSearchableInfo(requireActivity().componentName))
-        searchView.setOnQueryTextListener(
-            object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    activity?.endEditing()
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    search = newText ?: ""
-                    binding.apply {
-                        if (search.trimmedLength() > 0) {
-                            postsView.visibility = View.GONE
-                            searchRecyclerView.visibility = View.VISIBLE
-                        } else {
-                            postsView.visibility = View.VISIBLE
-                            searchRecyclerView.visibility = View.GONE
-                        }
-                    }
-                    return true
-                }
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                activity?.endEditing()
+                return false
             }
-        )
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                search = newText ?: ""
+                binding.apply {
+                    if (search.trimmedLength() > 0) {
+                        postsView.visibility = View.GONE
+                        searchRecyclerView.visibility = View.VISIBLE
+                    } else {
+                        postsView.visibility = View.VISIBLE
+                        searchRecyclerView.visibility = View.GONE
+                    }
+                }
+                return true
+            }
+        })
     }
 
     private fun selectMenu(item: MenuItem): Boolean = item.itemId == R.id.action_search
@@ -175,8 +168,7 @@ class PostsFragment : Fragment() {
         binding.recyclerView.layoutManager = mLayoutManager
         mAdapter = PostsAdapter {
             val link = "https://${ConfigFetcher.getConfig("host")}${it.link}"
-            val action =
-                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
+            val action = PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
             activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
         }
         mAdapter.stateRestorationPolicy =
@@ -214,8 +206,7 @@ class PostsFragment : Fragment() {
         binding.searchRecyclerView.layoutManager = mSearchLayoutManager
         mSearchAdapter = PostSearchAdapter {
             val link = "https://${ConfigFetcher.getConfig("host")}${it.link}"
-            val action =
-                PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
+            val action = PostsFragmentDirections.actionNavigationArticlesToNavigationWebpage(link)
             activity?.findNavController(R.id.nav_host_fragment_activity_main)?.navigate(action)
         }
         mSearchAdapter.stateRestorationPolicy =
@@ -295,13 +286,11 @@ class PostsFragment : Fragment() {
     }
 
     private fun deserialize(hits: List<Hit>) = hits.map {
-        val title =
-            (it.highlightResult?.get("title") as HighlightResultOption).value
+        val title = (it.highlightResult?.get("title") as HighlightResultOption).value
         val excerpt = (it.snippetResult?.get("body") as SnippetResultOption).value
         val permalink = it.additionalProperties?.get("path")!!.jsonPrimitive.content
         val thumbnail = try {
-            it.additionalProperties?.get("cover")?.jsonPrimitive?.content
-                ?: ""
+            it.additionalProperties?.get("cover")?.jsonPrimitive?.content ?: ""
         } catch (error: Throwable) {
             ""
         }

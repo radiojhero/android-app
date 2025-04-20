@@ -66,7 +66,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun switchFormat(format: String) {
-        MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(format, null)
+        MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(
+            format, null
+        )
     }
 
     private var originalPaddingBottom: Int? = null
@@ -97,10 +99,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         mediaBrowser = MediaBrowserCompat(
-            this,
-            ComponentName(this, MediaPlaybackService::class.java),
-            connectionCallbacks,
-            null
+            this, ComponentName(this, MediaPlaybackService::class.java), connectionCallbacks, null
         ).apply {
             connect()
         }
@@ -129,8 +128,6 @@ class MainActivity : AppCompatActivity(),
         supportActionBar?.apply {
             setDisplayShowTitleEnabled(false)
             setDisplayShowHomeEnabled(true)
-            setDisplayUseLogoEnabled(true)
-            setLogo(R.mipmap.ic_logojhero)
         }
     }
 
@@ -139,17 +136,15 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onPreferenceStartFragment(
-        caller: PreferenceFragmentCompat,
-        pref: Preference
+        caller: PreferenceFragmentCompat, pref: Preference
     ): Boolean {
         if (pref.fragment != "com.radiojhero.app.ui.webpage.WebPageFragment") {
             return false
         }
 
-        val action =
-            SettingsFragmentDirections.actionNavigationSettingsToNavigationWebpage(
-                ConfigFetcher.getConfig("aboutUrl") ?: ""
-            )
+        val action = SettingsFragmentDirections.actionNavigationSettingsToNavigationWebpage(
+            ConfigFetcher.getConfig("aboutUrl") ?: ""
+        )
         findNavController(R.id.nav_host_fragment_activity_main).navigate(action)
 
         return true
