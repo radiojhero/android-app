@@ -17,6 +17,7 @@ import com.onesignal.notifications.INotificationClickListener
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import io.sentry.android.core.SentryAndroid
+import androidx.core.net.toUri
 
 class RadioJHeroApplication : Application(), LifecycleEventObserver {
 
@@ -48,7 +49,7 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
             override fun onClick(event: INotificationClickEvent) {
                 val url = event.notification.additionalData?.getString("myurl") ?: return
 
-                if (Uri.parse(url).host != ConfigFetcher.getConfig("host")) {
+                if (url.toUri().host != ConfigFetcher.getConfig("host")) {
                     return
                 }
 

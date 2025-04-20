@@ -23,6 +23,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
 import com.radiojhero.app.collapse
@@ -169,6 +170,10 @@ class NowFragment : Fragment() {
                 clipToOutline = true
                 outlineProvider = RoundedOutlineProvider(5f)
             }
+            nowRoot.setOnScrollChangeListener { _, _, y, _, _ ->
+                (requireActivity() as MainActivity).toggleAppBarBackground(y > 0)
+            }
+            (requireActivity() as MainActivity).toggleAppBarBackground(nowRoot.scrollY > 0)
         }
 
         binding = inflated

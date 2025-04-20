@@ -9,6 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
+import androidx.core.content.edit
 
 class ConfigFetcher {
     companion object {
@@ -71,13 +72,13 @@ class ConfigFetcher {
                 load(StringReader(data))
             }
 
-            val editor = mSharedPreferences.edit()
+            mSharedPreferences.edit {
+                for (property in properties) {
+                    putString(property.key as String, property.value as String?)
+                }
 
-            for (property in properties) {
-                editor.putString(property.key as String, property.value as String?)
+                putBoolean("remoteConfigLoaded", true)
             }
-
-            editor.putBoolean("remoteConfigLoaded", true).apply()
             println("Configuration fetched and parsed.")
         }
     }

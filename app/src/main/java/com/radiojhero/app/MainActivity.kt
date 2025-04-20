@@ -1,5 +1,7 @@
 package com.radiojhero.app
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.content.ComponentName
 import android.media.AudioManager
 import android.os.Bundle
@@ -23,6 +25,7 @@ import com.radiojhero.app.databinding.ActivityMainBinding
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.services.MediaPlaybackService
 import com.radiojhero.app.ui.settings.SettingsFragmentDirections
+
 
 class MainActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -69,6 +72,22 @@ class MainActivity : AppCompatActivity(),
         MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(
             format, null
         )
+    }
+
+    private var hasScrolled = false
+
+    fun toggleAppBarBackground(hasScrolled: Boolean) {
+        if (hasScrolled == this.hasScrolled) {
+            return
+        }
+
+        this.hasScrolled = hasScrolled
+        val colorFrom = resources.getColor(if (hasScrolled) R.color.md_theme_surface else R.color.md_theme_surfaceContainer, null)
+        val colorTo = resources.getColor(if (hasScrolled) R.color.md_theme_surfaceContainer else R.color.md_theme_surface, null)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        colorAnimation.setDuration(200) // milliseconds
+        colorAnimation.addUpdateListener { animator -> binding.top.setBackgroundColor(animator.animatedValue as Int) }
+        colorAnimation.start()
     }
 
     private var originalPaddingBottom: Int? = null

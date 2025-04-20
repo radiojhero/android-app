@@ -28,6 +28,7 @@ import com.algolia.client.model.search.Hit
 import com.algolia.client.model.search.IgnorePlurals
 import com.algolia.client.model.search.SearchParamsObject
 import com.algolia.client.model.search.SnippetResultOption
+import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentPostsBinding
 import com.radiojhero.app.endEditing
@@ -127,6 +128,8 @@ class PostsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding?.recyclerView?.clearOnScrollListeners()
+        binding?.searchRecyclerView?.clearOnScrollListeners()
         binding = null
     }
 
@@ -176,6 +179,8 @@ class PostsFragment : Fragment() {
         binding.recyclerView.adapter = mAdapter
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                (requireActivity() as MainActivity).toggleAppBarBackground(recyclerView.computeVerticalScrollOffset() > 0)
+
                 if (dy != 0) {
                     activity?.endEditing()
                 }
@@ -193,6 +198,7 @@ class PostsFragment : Fragment() {
                 }
             }
         })
+        (requireActivity() as MainActivity).toggleAppBarBackground(binding.recyclerView.computeVerticalScrollOffset() > 0)
     }
 
     private fun setupSearchRecycler() {
@@ -214,6 +220,8 @@ class PostsFragment : Fragment() {
         binding.searchRecyclerView.adapter = mSearchAdapter
         binding.searchRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                (requireActivity() as MainActivity).toggleAppBarBackground(recyclerView.computeVerticalScrollOffset() > 0)
+
                 if (dy != 0) {
                     activity?.endEditing()
                 }

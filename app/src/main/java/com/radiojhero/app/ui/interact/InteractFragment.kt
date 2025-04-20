@@ -11,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.android.volley.toolbox.StringRequest
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentInteractBinding
 import com.radiojhero.app.endEditing
@@ -123,6 +124,10 @@ class InteractFragment : Fragment() {
                     }
                 }
             }
+            interactRoot.setOnScrollChangeListener { _, _, y, _, _ ->
+                (requireActivity() as MainActivity).toggleAppBarBackground(y > 0)
+            }
+            (requireActivity() as MainActivity).toggleAppBarBackground(interactRoot.scrollY > 0)
         }
 
         binding = inflated

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.onesignal.OneSignal
 import com.radiojhero.app.BuildConfig
 import com.radiojhero.app.MainActivity
@@ -30,17 +31,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+    private val scrollCallback = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            (requireActivity() as MainActivity).toggleAppBarBackground(recyclerView.computeVerticalScrollOffset() > 0)
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
     }
 
     override fun onResume() {
         super.onResume()
+        listView.addOnScrollListener(scrollCallback)
+        (requireActivity() as MainActivity).toggleAppBarBackground(listView.computeVerticalScrollOffset() > 0)
         preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(listener)
     }
 
     override fun onPause() {
         preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(listener)
+        listView.removeOnScrollListener(scrollCallback)
         super.onPause()
     }
 
