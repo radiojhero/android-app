@@ -11,6 +11,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
@@ -111,8 +112,9 @@ class MainActivity : AppCompatActivity(),
             )
 
             val params = binding.navView.layoutParams
-            params.height = if (imeInsets.bottom > 0) 0 else -1
+            params.height = if (imeInsets.bottom > 0) 0 else Toolbar.LayoutParams.MATCH_PARENT
             binding.navView.layoutParams = params
+            binding.bottomAppBar.visibility = if (imeInsets.bottom > 0) View.INVISIBLE else View.VISIBLE
 
             insets
         }
