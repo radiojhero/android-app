@@ -109,7 +109,6 @@
                     android:id="@+id/program_info_and_history"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/black_translucent"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="@id/program_image"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -119,6 +118,8 @@
                         android:id="@+id/now_program_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/gradient"
+                        android:paddingTop="70dp"
                         app:alignItems="center">
 
                         <View
@@ -162,6 +163,9 @@
                                 android:gravity="center_vertical"
                                 android:marqueeRepeatLimit="marquee_forever"
                                 android:scrollHorizontally="true"
+                                android:shadowColor="@color/black"
+                                android:shadowDy="1"
+                                android:shadowRadius="1"
                                 android:singleLine="true"
                                 android:text="Program Name"
                                 android:textColor="@android:color/white"
@@ -195,20 +199,21 @@
                         android:id="@+id/song_history_wrapper"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/border"
+                        android:background="@color/black"
                         android:orientation="vertical"
                         android:visibility="gone">
 
                         <View
                             android:layout_width="wrap_content"
-                            android:layout_height="5dp" />
+                            android:layout_height="5dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:background="@drawable/border" />
 
                         <TextView
                             android:id="@+id/song_history_0"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
                             android:layout_marginBottom="5dp"
                             android:ellipsize="end"
                             android:maxLines="1"
@@ -222,6 +227,7 @@
                             android:id="@+id/song_history_1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
                             android:layout_marginBottom="5dp"
                             android:ellipsize="end"
                             android:maxLines="1"
@@ -235,6 +241,7 @@
                             android:id="@+id/song_history_2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
                             android:layout_marginBottom="5dp"
                             android:ellipsize="end"
                             android:maxLines="1"
@@ -248,6 +255,7 @@
                             android:id="@+id/song_history_3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
                             android:layout_marginBottom="5dp"
                             android:ellipsize="end"
                             android:maxLines="1"
