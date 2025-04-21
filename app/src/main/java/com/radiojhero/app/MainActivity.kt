@@ -94,6 +94,12 @@ class MainActivity : AppCompatActivity(),
     private var originalPaddingBottom: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val screenLayoutSize =
+            resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK
+        if (screenLayoutSize == Configuration.SCREENLAYOUT_SIZE_SMALL || screenLayoutSize == Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view: View, insets: WindowInsetsCompat ->
