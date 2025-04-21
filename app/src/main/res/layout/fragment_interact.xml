@@ -8,8 +8,9 @@
     tools:context=".ui.interact.InteractFragment">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        style="@style/width_match_parent_max_480"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingBottom="20dp">
 

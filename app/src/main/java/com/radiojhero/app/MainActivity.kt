@@ -3,6 +3,8 @@ package com.radiojhero.app
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.ComponentName
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun buildTransportControls() {
         MediaControllerCompat.getMediaController(this).apply {
-            binding.fab.setOnClickListener {
+            binding.fab?.setOnClickListener {
                 if (!isStopped(playbackState?.state)) {
                     transportControls.pause()
                 } else {
@@ -83,8 +85,12 @@ class MainActivity : AppCompatActivity(),
         }
 
         this.hasScrolled = hasScrolled
-        val colorFrom = resources.getColor(if (hasScrolled) R.color.md_theme_surface else R.color.md_theme_surfaceContainer, null)
-        val colorTo = resources.getColor(if (hasScrolled) R.color.md_theme_surfaceContainer else R.color.md_theme_surface, null)
+        val colorFrom = resources.getColor(
+            if (hasScrolled) R.color.md_theme_surface else R.color.md_theme_surfaceContainer, null
+        )
+        val colorTo = resources.getColor(
+            if (hasScrolled) R.color.md_theme_surfaceContainer else R.color.md_theme_surface, null
+        )
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         colorAnimation.setDuration(200) // milliseconds
         colorAnimation.addUpdateListener { animator -> binding.top.setBackgroundColor(animator.animatedValue as Int) }
@@ -102,28 +108,6 @@ class MainActivity : AppCompatActivity(),
 
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view: View, insets: WindowInsetsCompat ->
-            if (originalPaddingBottom == null) {
-                originalPaddingBottom = view.paddingBottom
-            }
-
-            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                originalPaddingBottom!! - if (imeInsets.bottom > 0) 0 else systemInsets.bottom
-            )
-
-            val params = binding.navView.layoutParams
-            params.height = if (imeInsets.bottom > 0) 0 else Toolbar.LayoutParams.MATCH_PARENT
-            binding.navView.layoutParams = params
-            binding.bottomAppBar.visibility = if (imeInsets.bottom > 0) View.INVISIBLE else View.VISIBLE
-
-            insets
-        }
 
         mediaBrowser = MediaBrowserCompat(
             this, ComponentName(this, MediaPlaybackService::class.java), connectionCallbacks, null
@@ -135,7 +119,32 @@ class MainActivity : AppCompatActivity(),
         setContentView(binding.root)
 
         val navView = binding.navView
-        navView.menu[2].isEnabled = false
+        if (navView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view: View, insets: WindowInsetsCompat ->
+                val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+                if (originalPaddingBottom == null) {
+                    originalPaddingBottom = view.paddingBottom
+                }
+
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    originalPaddingBottom!! - if (imeInsets.bottom > 0) 0 else systemInsets.bottom
+                )
+
+                val params = binding.navView?.layoutParams
+                params?.height = if (imeInsets.bottom > 0) 0 else Toolbar.LayoutParams.MATCH_PARENT
+                navView.layoutParams = params
+                binding.bottomAppBar?.visibility =
+                    if (imeInsets.bottom > 0) View.INVISIBLE else View.VISIBLE
+
+                insets
+            }
+            navView.menu[2].isEnabled = false
+        }
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
@@ -150,7 +159,8 @@ class MainActivity : AppCompatActivity(),
         )
         setSupportActionBar(binding.topAppBar)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        navView?.setupWithNavController(navController)
+        binding.navRail?.setupWithNavController(navController)
 
         supportActionBar?.apply {
             setDisplayShowTitleEnabled(false)
@@ -199,7 +209,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun switchFabIcon(toggle: Boolean) {
-        binding.fab.apply {
+        binding.fab?.apply {
             setImageResource(if (toggle) R.drawable.ic_baseline_pause_24 else R.drawable.ic_baseline_play_arrow_24)
             contentDescription = getString(if (toggle) R.string.pause else R.string.play)
         }
