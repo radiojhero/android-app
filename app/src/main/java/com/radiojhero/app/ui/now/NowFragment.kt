@@ -416,18 +416,22 @@ class NowFragment : Fragment() {
     }
 
     private fun toggleLyrics() {
-        if (binding?.lyricsButton?.isChecked!!) {
-            binding?.lyricsWrapper?.expand(200, true)
+        val binding = binding ?: return
+        if (binding.lyricsButton.isChecked) {
+            binding.lyricsWrapper.expand(200, true)
+            binding.historyButton.isChecked = false
         } else {
-            binding?.lyricsWrapper?.collapse(200)
+            binding.lyricsWrapper.collapse(200)
         }
     }
 
     private fun toggleSongHistory() {
-        if (binding?.historyButton?.isChecked!!) {
-            binding?.songHistoryWrapper?.expand(200)
+        val binding = binding ?: return
+        if (binding.historyButton.isChecked) {
+            binding.songHistoryWrapper.expand(200)
+            binding.lyricsButton.isChecked = false
         } else {
-            binding?.songHistoryWrapper?.collapse(200)
+            binding.songHistoryWrapper.collapse(200)
         }
     }
 }
