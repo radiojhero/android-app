@@ -3,9 +3,11 @@ package com.radiojhero.app.services
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
@@ -437,8 +439,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 R.drawable.ic_baseline_pause_24, getString(R.string.pause), playPauseIntent
             )
 
-        startForeground(
-            1,
+        val notification =
             NotificationCompat.Builder(this, "MediaPlayback").setContentTitle(description.title)
                 .setContentText(description.subtitle).setLargeIcon(description.iconBitmap)
                 .setContentIntent(mediaSession.controller.sessionActivity)
@@ -449,6 +450,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSession.sessionToken).setShowActionsInCompactView(0)
                 ).build()
-        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        } else {
+            startForeground(1, notification)
+        }
     }
 }
