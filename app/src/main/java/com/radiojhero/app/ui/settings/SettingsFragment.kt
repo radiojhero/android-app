@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.onesignal.OneSignal
 import com.radiojhero.app.BuildConfig
 import com.radiojhero.app.MainActivity
@@ -46,6 +47,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         listView.addOnScrollListener(scrollCallback)
         (requireActivity() as MainActivity).toggleAppBarBackground(listView.computeVerticalScrollOffset() > 0)
         preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(listener)
+        activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+            ?.setOnItemReselectedListener { item ->
+                if (item.itemId == R.id.navigation_settings) {
+                    listView.smoothScrollToPosition(0)
+                }
+            }
     }
 
     override fun onPause() {

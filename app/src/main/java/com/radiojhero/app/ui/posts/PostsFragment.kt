@@ -28,6 +28,7 @@ import com.algolia.client.model.search.Hit
 import com.algolia.client.model.search.IgnorePlurals
 import com.algolia.client.model.search.SearchParamsObject
 import com.algolia.client.model.search.SnippetResultOption
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.databinding.FragmentPostsBinding
@@ -111,6 +112,13 @@ class PostsFragment : Fragment() {
             }
         }
 
+        activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+            ?.setOnItemReselectedListener { item ->
+                if (item.itemId == R.id.navigation_articles) {
+                    inflated.recyclerView.smoothScrollToPosition(0)
+                    inflated.searchRecyclerView.smoothScrollToPosition(0)
+                }
+            }
         return inflated.root
     }
 

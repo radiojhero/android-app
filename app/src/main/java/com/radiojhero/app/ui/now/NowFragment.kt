@@ -18,6 +18,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
 import com.radiojhero.app.RoundedOutlineProvider
@@ -181,6 +182,12 @@ class NowFragment : Fragment() {
         }
 
         binding = inflated
+        activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+            ?.setOnItemReselectedListener { item ->
+                if (item.itemId == R.id.navigation_now) {
+                    inflated.nowRoot.smoothScrollTo(0, 0)
+                }
+            }
         setupMediaController()
         return inflated.root
     }

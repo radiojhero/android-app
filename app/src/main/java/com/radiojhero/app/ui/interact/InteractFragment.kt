@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.android.volley.toolbox.StringRequest
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.radiojhero.app.MainActivity
 import com.radiojhero.app.R
@@ -132,6 +133,13 @@ class InteractFragment : Fragment() {
 
         binding = inflated
         setupMediaController()
+
+        activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+            ?.setOnItemReselectedListener { item ->
+                if (item.itemId == R.id.navigation_interact) {
+                    inflated.interactRoot.smoothScrollTo(0, 0)
+                }
+            }
 
         return inflated.root
     }
