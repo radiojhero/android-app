@@ -294,7 +294,7 @@ class PostsFragment : Fragment() {
                 mSearchAdapter.append(hits)
             } else {
                 mSearchAdapter.replace(hits)
-                mSearchAdapter.setStats(response.nbHits ?: 0, response.processingTimeMS.toLong())
+                mSearchAdapter.setStats(response.nbHits ?: 0, response.processingTimeMS?.toLong() ?: 0)
             }
         }
 
