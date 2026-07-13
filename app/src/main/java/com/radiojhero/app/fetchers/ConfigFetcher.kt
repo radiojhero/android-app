@@ -50,7 +50,7 @@ class ConfigFetcher {
         private fun fetch() {
             println("Fetching configuration...")
 
-            val url = "https://wp.radiojhero.com/android-app.properties"
+            val url = "https://api.radiojhero.com/android-app.properties"
             val urlObject = URL(url)
             val urlConnection = urlObject.openConnection() as HttpURLConnection
 
