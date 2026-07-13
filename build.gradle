@@ -8,7 +8,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.9.6'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.9.8'
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:0.13.4'
 
         // NOTE: Do not place your application dependencies here; they belong
