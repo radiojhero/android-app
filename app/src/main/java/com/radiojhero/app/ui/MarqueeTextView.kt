@@ -17,13 +17,13 @@ class MarqueeTextView : AppCompatTextView {
 
     override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         if (focused) {
-            super.onFocusChanged(focused, direction, previouslyFocusedRect)
+            super.onFocusChanged(true, direction, previouslyFocusedRect)
         }
     }
 
     override fun onWindowFocusChanged(focused: Boolean) {
         if (focused) {
-            super.onWindowFocusChanged(focused)
+            super.onWindowFocusChanged(true)
         }
     }
 

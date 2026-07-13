@@ -22,13 +22,13 @@ class PostsFetcher {
     )
 
     companion object {
-        private const val QUERY = """
-        query GetPosts(${'$'}offset: Int! = 0) {
+        private const val QUERY = $$"""
+        query GetPosts($offset: Int! = 0) {
           posts(
             where: { status: PUBLISHED, type: ARTICLE, deletedAt: null }
             options: {
               limit: 60
-              offset: ${'$'}offset
+              offset: $offset
               sort: [{ sticky: DESC }, { publishedAt: DESC }]
             }
           ) {
