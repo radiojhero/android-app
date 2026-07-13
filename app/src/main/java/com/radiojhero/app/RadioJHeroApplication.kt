@@ -30,13 +30,14 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
 
         println("debug = ${BuildConfig.DEBUG}")
 
-        if (!BuildConfig.DEBUG) {
-            SentryAndroid.init(this) {
-                it.apply {
-                    dsn = ConfigFetcher.getConfig("sentryUrl")
-                    isEnableAutoSessionTracking = true
-                    sampleRate = 1.0
-                }
+        SentryAndroid.init(this) {
+            it.apply {
+                dsn = ConfigFetcher.getConfig("sentryUrl")
+                isEnableAutoSessionTracking = true
+                sampleRate = 1.0
+                isDebug = BuildConfig.DEBUG
+                sessionReplay.onErrorSampleRate = 1.0
+                sessionReplay.sessionSampleRate = 0.1
             }
         }
 
