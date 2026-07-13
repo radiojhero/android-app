@@ -343,8 +343,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         var songLyrics = ""
         val lyrics = metadata.getJSONArray("current_song_lyrics")
         if (lyrics.length() > 0) {
+            // TODO: handle live lyrics...
             val verse = lyrics.getJSONObject(0)
-            if (verse.getString("id") == "raw") {
+            val id = try {
+                verse.getString("id")
+            } catch (error: Throwable) {
+                ""
+            }
+            if (id == "raw") {
                 songLyrics = verse.getString("text")
             }
         }
