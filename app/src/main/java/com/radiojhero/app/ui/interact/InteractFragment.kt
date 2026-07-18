@@ -274,7 +274,6 @@ class InteractFragment : Fragment() {
                     else -> null
                 }
 
-                value.length < 8 -> context.getString(R.string.value_too_short)
                 else -> null
             }
 
