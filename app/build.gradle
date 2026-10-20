@@ -13,8 +13,8 @@ android {
         applicationId "com.radiojhero.app"
         minSdk 29
         targetSdk 37
-        versionCode 21
-        versionName "6.0.0"
+        versionCode 22
+        versionName "6.1.0-alpha.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // Remote configuration; pass -PconfigUrl=... to point a build at a local API.
         buildConfigField "String", "CONFIG_URL", "\"${project.findProperty('configUrl') ?: 'https://api.radiojhero.com/android-app.properties'}\""
