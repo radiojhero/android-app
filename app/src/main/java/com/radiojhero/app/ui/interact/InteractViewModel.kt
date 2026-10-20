@@ -55,12 +55,16 @@ class InteractViewModel(private val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // Like EditText.setError, typing into a field clears that field's error.
+
     fun onNameChange(value: String) {
         name = value.take(50)
+        nameError = null
     }
 
     fun onSongChange(value: String) {
         song = value
+        songError = null
         val currentMessage = message.trim()
         if (currentMessage.isBlank() || currentMessage.length >= 10) {
             messageError = null
@@ -69,6 +73,7 @@ class InteractViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun onMessageChange(value: String) {
         message = value.take(320)
+        messageError = null
         val currentSong = song.trim()
         if (currentSong.isBlank() || currentSong.length >= 8) {
             songError = null
