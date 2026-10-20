@@ -1,17 +1,6 @@
 package com.radiojhero.app
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
-import android.app.Activity
-import android.graphics.Outline
-import android.view.View
-import android.view.ViewOutlineProvider
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import org.json.JSONObject
 import java.text.Normalizer
 import java.util.*
@@ -26,26 +15,6 @@ fun Long.toDate(): Date {
     return calendar.time
 }
 
-class RoundedOutlineProvider(private val radius: Float) : ViewOutlineProvider() {
-
-    override fun getOutline(view: View?, outline: Outline?) {
-        if (view == null) {
-            return
-        }
-
-        val dpRadius = radius * view.resources.displayMetrics.density
-        outline?.setRoundRect(0, 0, view.width, view.height, dpRadius)
-    }
-}
-
-fun Activity.endEditing() {
-    currentFocus?.let {
-        val inputMethodManager =
-            ContextCompat.getSystemService(this, InputMethodManager::class.java)
-        inputMethodManager?.hideSoftInputFromWindow(it.windowToken, 0)
-    }
-}
-
 fun switchTheme(theme: String) {
     AppCompatDelegate.setDefaultNightMode(
         when (theme) {
@@ -54,57 +23,6 @@ fun switchTheme(theme: String) {
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
     )
-}
-
-fun View.expand(duration: Long, fillParent: Boolean = false) {
-    val targetHeight = if (fillParent) {
-        val parent = this.parent as View
-        parent.width
-    } else {
-        measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        measuredHeight
-    }
-
-    layoutParams.height = 0
-    this.layoutParams = layoutParams
-    visibility = View.VISIBLE
-    val anim = ValueAnimator.ofInt(0, targetHeight)
-    anim.interpolator = AccelerateDecelerateInterpolator()
-    anim.duration = duration
-    anim.addUpdateListener {
-        val layoutParams = layoutParams
-        layoutParams.height = (targetHeight * it.animatedFraction).toInt()
-        this.layoutParams = layoutParams
-    }
-
-    anim.addListener(object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator) {
-            layoutParams.height = if (fillParent) targetHeight else LinearLayout.LayoutParams.WRAP_CONTENT
-            this@expand.layoutParams = layoutParams
-        }
-    })
-    anim.start()
-}
-
-fun View.collapse(duration: Long) {
-    val sourceHeight = height
-    val anim = ValueAnimator.ofInt(sourceHeight, 0)
-    anim.interpolator = AccelerateDecelerateInterpolator()
-    anim.duration = duration
-    anim.addUpdateListener {
-        val layoutParams = layoutParams
-        layoutParams.height = (sourceHeight * (1 - it.animatedFraction)).toInt()
-        this.layoutParams = layoutParams
-    }
-
-    anim.addListener(object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator) {
-            layoutParams.height = 0
-            this@collapse.layoutParams = layoutParams
-            visibility = View.GONE
-        }
-    })
-    anim.start()
 }
 
 fun pmDocToHTML(doc: String): String = buildString {

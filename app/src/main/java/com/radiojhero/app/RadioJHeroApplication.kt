@@ -2,12 +2,10 @@ package com.radiojhero.app
 
 import android.app.Application
 import android.content.Intent
-import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
@@ -53,12 +51,12 @@ class RadioJHeroApplication : Application(), LifecycleEventObserver {
                     return
                 }
 
-                val args = Bundle()
-                args.putString("url", url)
-
-                NavDeepLinkBuilder(this@RadioJHeroApplication).setGraph(R.navigation.mobile_navigation)
-                    .setDestination(R.id.navigation_webpage).setArguments(args)
-                    .createTaskStackBuilder().startActivities()
+                startActivity(
+                    Intent(this@RadioJHeroApplication, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        putExtra(MainActivity.EXTRA_URL, url)
+                    }
+                )
             }
         })
     }

@@ -55,5 +55,7 @@
     <string name="posts_error">Não foi possível obter a lista de artigos. Tente novamente mais tarde.</string>
     <string name="song_cover_image">Arte de capa da música</string>
     <string name="requester_string">(pedido de &lt;b>%1$s&lt;/b>)</string>
+    <string name="navigate_up">Voltar</string>
+    <string name="clear_search">Limpar busca</string>
     <string name="lyrics_missing">Ainda não temos a letra desta música…</string>
 </resources>

@@ -4,8 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -30,9 +28,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import coil3.SingletonImageLoader
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.toBitmap
 import com.radiojhero.app.R
 import com.radiojhero.app.fetchers.ConfigFetcher
 import com.radiojhero.app.fetchers.MetadataFetcher
@@ -391,16 +390,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             )
 
         if (this.songImageSrc != songImageSrc) {
-            Glide.with(this).asBitmap().load(songImageSrc).into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+            val request = ImageRequest.Builder(this).data(songImageSrc).allowHardware(false)
+                .target(onSuccess = { image ->
                     this@MediaPlaybackService.songImageSrc = songImageSrc
                     println("image loaded: $songImageSrc")
-                    metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
+                    metadataBuilder.putBitmap(
+                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART, image.toBitmap()
+                    )
+                }).build()
+            SingletonImageLoader.get(this).enqueue(request)
         }
 
         mediaSession.apply {
