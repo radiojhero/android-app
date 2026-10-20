@@ -16,6 +16,8 @@ android {
         versionCode 21
         versionName "6.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Remote configuration; pass -PconfigUrl=... to point a build at a local API.
+        buildConfigField "String", "CONFIG_URL", "\"${project.findProperty('configUrl') ?: 'https://api.radiojhero.com/android-app.properties'}\""
     }
 
     buildTypes {
