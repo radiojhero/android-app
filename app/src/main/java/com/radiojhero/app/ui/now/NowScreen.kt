@@ -76,6 +76,7 @@ import com.radiojhero.app.ui.components.skeleton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 private data class NowPlaying(
     val programName: String,
@@ -99,14 +100,19 @@ private data class NowPlaying(
 
     companion object {
         fun from(extras: Bundle?): NowPlaying? {
-            if (extras == null || extras.getLong(MediaPlaybackService.LAST_UPDATED_TIME, -1L) == -1L) {
+            if (extras == null || extras.getLong(
+                    MediaPlaybackService.LAST_UPDATED_TIME,
+                    -1L
+                ) == -1L
+            ) {
                 return null
             }
 
             return NowPlaying(
                 programName = extras.getString(MediaPlaybackService.PROGRAM_NAME) ?: "",
                 programGenre = extras.getString(MediaPlaybackService.PROGRAM_GENRE) ?: "",
-                programDescription = extras.getString(MediaPlaybackService.PROGRAM_DESCRIPTION) ?: "",
+                programDescription = extras.getString(MediaPlaybackService.PROGRAM_DESCRIPTION)
+                    ?: "",
                 programImage = extras.getString(MediaPlaybackService.PROGRAM_IMAGE),
                 djName = extras.getString(MediaPlaybackService.DJ_NAME) ?: "",
                 djImage = extras.getString(MediaPlaybackService.DJ_IMAGE),
@@ -256,7 +262,12 @@ private fun NowPlayingContent(nowPlaying: NowPlaying?, onOpenSchedule: () -> Uni
                     Spacer(Modifier.width(10.dp))
                 }
 
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .height(50.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
                     val shadow = Shadow(black, Offset(0f, 1f), 1f)
 
                     if (data.programName.isNotBlank()) {
@@ -412,6 +423,7 @@ private fun NowPlayingContent(nowPlaying: NowPlaying?, onOpenSchedule: () -> Uni
         Column(
             Modifier
                 .weight(1f)
+                .height(65.dp)
                 .padding(start = 10.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
@@ -424,7 +436,11 @@ private fun NowPlayingContent(nowPlaying: NowPlaying?, onOpenSchedule: () -> Uni
                 )
             }
             if (data.songArtist.isNotBlank()) {
-                MarqueeText(data.songArtist, modifier = Modifier.skeleton(loading), fontSize = 13.sp)
+                MarqueeText(
+                    data.songArtist,
+                    modifier = Modifier.skeleton(loading),
+                    fontSize = 13.sp
+                )
             }
             if (data.songAlbum.isNotBlank()) {
                 MarqueeText(
@@ -472,7 +488,7 @@ private fun SongProgress(nowPlaying: NowPlaying, modifier: Modifier = Modifier) 
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             while (true) {
                 now = getNow()
-                delay(250)
+                delay(250.milliseconds)
             }
         }
     }

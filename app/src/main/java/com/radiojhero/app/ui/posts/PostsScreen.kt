@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
@@ -78,7 +79,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 /** How close to the end of a list (in items) the next page starts loading. */
 private const val LOAD_MORE_THRESHOLD = 10
@@ -301,36 +302,97 @@ private fun PostItem(post: PostsFetcher.Post?, dateFormat: SimpleDateFormat, onC
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .height(50.dp)
-                            .background(Brush.verticalGradient(listOf(black.copy(alpha = 0f), black)))
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        black.copy(alpha = 0f),
+                                        black
+                                    )
+                                )
+                            )
                             .padding(top = 30.dp),
                         color = Color.White,
                         fontSize = 11.sp,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = LocalTextStyle.current.copy(shadow = Shadow(black, Offset(0f, 1f), 1f)),
+                        style = LocalTextStyle.current.copy(
+                            shadow = Shadow(
+                                black,
+                                Offset(0f, 1f),
+                                1f
+                            )
+                        ),
                     )
                 }
             }
 
             Column(Modifier.padding(start = 8.dp)) {
-                Text(
-                    title,
-                    modifier = Modifier.skeleton(loading),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    subtitle,
-                    modifier = Modifier
-                        .alpha(0.6f)
-                        .skeleton(loading),
-                    fontSize = 11.sp,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (loading) {
+                    Text(
+                        "",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .scale(1f, 0.9f)
+                            .skeleton(loading),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        "",
+                        modifier = Modifier
+                            .fillMaxSize(0.75f)
+                            .scale(1f, 0.9f)
+                            .skeleton(loading),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        "",
+                        modifier = Modifier
+                            .alpha(0.6f)
+                            .fillMaxSize()
+                            .scale(1f, 0.9f)
+                            .skeleton(loading),
+                        fontSize = 11.sp,
+                    )
+                    Text(
+                        "",
+                        modifier = Modifier
+                            .alpha(0.6f)
+                            .fillMaxSize()
+                            .scale(1f, 0.9f)
+                            .skeleton(loading),
+                        fontSize = 11.sp,
+                    )
+                    Text(
+                        "",
+                        modifier = Modifier
+                            .alpha(0.6f)
+                            .fillMaxSize(0.75f)
+                            .scale(1f, 0.9f)
+                            .skeleton(loading),
+                        fontSize = 11.sp,
+                    )
+                } else {
+                    Text(
+                        title,
+                        modifier = Modifier.skeleton(loading),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        subtitle,
+                        modifier = Modifier
+                            .alpha(0.6f)
+                            .skeleton(loading),
+                        fontSize = 11.sp,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }
