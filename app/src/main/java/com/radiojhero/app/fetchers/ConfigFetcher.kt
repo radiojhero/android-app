@@ -10,6 +10,7 @@ import java.net.URL
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 import androidx.core.content.edit
+import com.radiojhero.app.BuildConfig
 
 class ConfigFetcher {
     companion object {
@@ -50,7 +51,7 @@ class ConfigFetcher {
         private fun fetch() {
             println("Fetching configuration...")
 
-            val url = "https://api.radiojhero.com/android-app.properties"
+            val url = BuildConfig.CONFIG_URL
             val urlObject = URL(url)
             val urlConnection = urlObject.openConnection() as HttpURLConnection
 
