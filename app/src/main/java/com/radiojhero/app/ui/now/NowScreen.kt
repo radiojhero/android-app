@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -156,12 +157,15 @@ private val Placeholder = NowPlaying(
 @Composable
 fun NowScreen(extras: Bundle?, scrollToTop: Flow<Unit>, onOpenSchedule: () -> Unit) {
     val scrollState = rememberScrollState()
+    val scrolled by remember {
+        derivedStateOf { scrollState.value > 0 }
+    }
     LaunchedEffect(scrollToTop) {
         scrollToTop.collect { scrollState.animateScrollTo(0) }
     }
 
     Column(Modifier.fillMaxSize()) {
-        AppTopBar(scrolled = scrollState.value > 0)
+        AppTopBar(scrolled)
 
         Column(
             Modifier

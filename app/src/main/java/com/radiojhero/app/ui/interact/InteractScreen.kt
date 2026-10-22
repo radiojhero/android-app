@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +68,9 @@ fun InteractScreen(
     viewModel: InteractViewModel = viewModel(),
 ) {
     val scrollState = rememberScrollState()
+    val scrolled by remember {
+        derivedStateOf { scrollState.value > 0 }
+    }
     LaunchedEffect(scrollToTop) {
         scrollToTop.collect { scrollState.animateScrollTo(0) }
     }
@@ -77,7 +81,7 @@ fun InteractScreen(
     val textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
 
     Column(Modifier.fillMaxSize()) {
-        AppTopBar(scrolled = scrollState.value > 0)
+        AppTopBar(scrolled)
 
         Column(
             Modifier
